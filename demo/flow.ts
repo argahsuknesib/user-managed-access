@@ -232,7 +232,7 @@ ${umaHeader}`)
 // There are two main points of work here: right now the claim token gathers all claims internally, as only a single token can be passed.
 // This is problematic when claims and OIDC tokens have to be passed. It might be worth looking deeper into ODRL requests to carry these claims instead of an UMA token.`))
 
-  const accessGrantedResponse = await fetch(tokenEndpoint, {
+  const accessGrantedResponse = await fetch("http://n063-02b.wall2.ilabt.iminds.be:4000/uma/token", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(smartWatchAccessRequestODRL)
