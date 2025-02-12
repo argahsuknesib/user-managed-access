@@ -127,7 +127,7 @@
           "CombinedShorthandResolver:_resolvers_value": {
             "@type": "KeyExtractor",
             "key": "authServer",
-            "defaultValue": "http://localhost:4000"
+            "defaultValue": "http://n063-03a.wall2.ilabt.iminds.be:4000"
           }
         }
       ]
