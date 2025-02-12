@@ -46,7 +46,7 @@ export class ContractManager {
                     "@type": "Constraint",
                     leftOperand: "purpose",
                     operator:  "eq",
-                    rightOperand: { "@id": "http://example.org/bariatric-care" },
+                    rightOperand: { "@id": "http://example.org/aggregation" },
                 } ]
             } ]
         }

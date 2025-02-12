@@ -3,16 +3,16 @@
 import { fetch } from 'cross-fetch';
 import { Parser, Writer, Store } from 'n3';
 import { randomUUID } from 'crypto';
-import chalk from 'chalk'
+// import chalk from 'chalk'
 
 import * as jsonld from 'jsonld';
 
-import vc from '@digitalcredentials/vc';
+// import vc from '@digitalcredentials/vc';
 
-// Required to set up a suite instance with private key
-import {Ed25519VerificationKey2020} from
-  '@digitalcredentials/ed25519-verification-key-2020';
-import {Ed25519Signature2020} from '@digitalcredentials/ed25519-signature-2020';
+// // Required to set up a suite instance with private key
+// import {Ed25519VerificationKey2020} from
+//   '@digitalcredentials/ed25519-verification-key-2020';
+// import {Ed25519Signature2020} from '@digitalcredentials/ed25519-signature-2020';
 
 
 
@@ -27,35 +27,27 @@ const terms = {
     filter: 'http://www.w3.org/ns/solid/terms#filter',
     location: 'http://www.w3.org/ns/solid/terms#location',
   },
-  filters: {
-    bday: 'http://localhost:3000/catalog/public/filters/bday',
-    age: 'http://localhost:3000/catalog/public/filters/age',
-  },
-  views: {
-    bday: 'http://localhost:3000/ruben/private/derived/bday',
-    age: 'http://localhost:3000/ruben/private/derived/age',
-  },
   resources: {
-    smartwatch: 'http://localhost:3000/ruben/medical/smartwatch.ttl'
+    smartwatch: 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/acc-x/'
   },
   agents: {
-    ruben: 'http://localhost:3000/ruben/profile/card#me',
-    alice: 'http://localhost:3000/alice/profile/card#me',
-    vendor: 'http://localhost:3000/demo/public/vendor',
-    present: 'http://localhost:3000/demo/public/bday-app',
+    ruben: 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/profile/card#me',
+    alice: 'http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me',
   },
   scopes: {
     read: 'urn:example:css:modes:read',
   }
 }
 
-const policyContainer = 'http://localhost:3000/ruben/settings/policies/';
+const policyContainer = 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/settings/policies/';
 
 async function main() {
 
   const webIdData = new Store(parser.parse(await (await fetch(terms.agents.ruben)).text()));
+  const objects = webIdData.getObjects(null, terms.solid.umaServer, null);
+  const umaServer = objects[0]?.id; // Assigns the first ID or null if no value exists
   
-  const umaServer = webIdData.getObjects(terms.agents.ruben, terms.solid.umaServer, null)[0].value;
+  // const umaServer = webIdData.getObjects(terms.agents.ruben, terms.solid.umaServer, null)[0].value;
   const configUrl = new URL('.well-known/uma2-configuration', umaServer);
   const umaConfig = await (await fetch(configUrl)).json();
   const tokenEndpoint = umaConfig.token_endpoint;
@@ -71,8 +63,8 @@ Patient WebID:    ${terms.agents.ruben}
 Target Resource:  ${terms.resources.smartwatch}`)
 
   log('To protect this data, a policy is added restricting access to a specific healthcare employee for the purpose of bariatric care.');
-  log(chalk.italic(`Note: Policy management is out of scope for POC1, right now they are just served from a public container on the pod.
-additionally, selecting relevant policies is not implemented at the moment, all policies are evaluated, but this is a minor fix in the AS.`))
+ // log(chalk.italic(`Note: Policy management is out of scope for POC1, right now they are just served from a public container on the pod.
+//additionally, selecting relevant policies is not implemented at the moment, all policies are evaluated, but this is a minor fix in the AS.`))
   
   const healthcare_patient_policy = 
   `PREFIX dcterms: <http://purl.org/dc/terms/>
@@ -100,7 +92,7 @@ PREFIX ex: <http://example.org/>
 <http://example.org/HCPX-request-permission-purpose> a odrl:Constraint ;
     odrl:leftOperand odrl:purpose ; # can also be oac:Purpose, to conform with OAC profile
     odrl:operator odrl:eq ;
-    odrl:rightOperand ex:bariatric-care .
+    odrl:rightOperand ex:aggregation .
 
 <http://example.org/HCPX-request-permission-lb> a odrl:Constraint ;
     odrl:leftOperand oac:LegalBasis ;
@@ -121,9 +113,9 @@ PREFIX ex: <http://example.org/>
   if (medicalPolicyCreationResponse.status !== 201) { log('Adding a policy did not succeed...'); throw 0; }
 
   log(`The policy assigns read permissions for the personal doctor ${terms.agents.alice} of the patient for the smartwatch resource 
-on the condition of the purpose of the request being "http://example.org/bariatric-care" and the legal basis being "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a".`)
+on the condition of the purpose of the request being "http://example.org/aggregation" and the legal basis being "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a".`)
 
-  log(chalk.bold("The doctor now tries to access the private smartwatch resource."))
+  // log(chalk.bold("The doctor now tries to access the private smartwatch resource."))
 
   const res = await fetch(terms.resources.smartwatch, {
     method: "GET",
@@ -176,15 +168,15 @@ ${umaHeader}`)
 
   // JWT (HS256; secret: "ceci n'est pas un secret")
   // {
-  //   "http://www.w3.org/ns/odrl/2/purpose": "http://example.org/bariatric-care",
-  //   "urn:solidlab:uma:claims:types:webid": "http://localhost:3000/alice/profile/card#me",
+  //   "http://www.w3.org/ns/odrl/2/purpose": "http://example.org/aggregation",
+  //   "urn:solidlab:uma:claims:types:webid": "http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me",
   //   "https://w3id.org/oac#LegalBasis": "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a"
   // }
   const claim_token = "eyJhbGciOiJIUzI1NiJ9.eyJodHRwOi8vd3d3LnczLm9yZy9ucy9vZHJsLzIvcHVycG9zZSI6Imh0dHA6Ly9leGFtcGxlLm9yZy9iYXJpYXRyaWMtY2FyZSIsInVybjpzb2xpZGxhYjp1bWE6Y2xhaW1zOnR5cGVzOndlYmlkIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwL2FsaWNlL3Byb2ZpbGUvY2FyZCNtZSIsImh0dHBzOi8vdzNpZC5vcmcvb2FjI0xlZ2FsQmFzaXMiOiJodHRwczovL3czaWQub3JnL2Rwdi9sZWdhbC9ldS9nZHByI0E5LTItYSJ9.nT55jaXNDsHgAo_zcRMsbJqcNj4FVdW_-xjcwNam-1M"
 
   const claims: any = {
-    "http://www.w3.org/ns/odrl/2/purpose": "http://example.org/bariatric-care",
-    "urn:solidlab:uma:claims:types:webid": "http://localhost:3000/alice/profile/card#me",
+    "http://www.w3.org/ns/odrl/2/purpose": "http://example.org/aggregation",
+    "urn:solidlab:uma:claims:types:webid": "http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me",
     "https://w3id.org/oac#LegalBasis": "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a"
   }
 
@@ -214,7 +206,7 @@ ${umaHeader}`)
           "@id": `http://example.org/HCPX-request-permission-purpose/${randomUUID()}`,
           leftOperand: "purpose",
           operator: "eq",
-          rightOperand: { "@id": "http://example.org/bariatric-care" },
+          rightOperand: { "@id": "http://example.org/aggregation" },
         }, {
           "@type": "Constraint",
           "@id": `http://example.org/HCPX-request-permission-purpose/${randomUUID()}`,
@@ -236,9 +228,9 @@ ${umaHeader}`)
   log('Together with the UMA grant_type and ticket requirements, these are bundled as an ODRL Request and sent back to the Authorization Server')
   log(JSON.stringify(smartWatchAccessRequestODRL, null, 2))
   
-  log(chalk.italic(`Note: the ODRL Request constraints are not yet evaluated as claims, only the passed claim token is.
-There are two main points of work here: right now the claim token gathers all claims internally, as only a single token can be passed.
-This is problematic when claims and OIDC tokens have to be passed. It might be worth looking deeper into ODRL requests to carry these claims instead of an UMA token.`))
+  //log(chalk.italic(`Note: the ODRL Request constraints are not yet evaluated as claims, only the passed claim token is.
+// There are two main points of work here: right now the claim token gathers all claims internally, as only a single token can be passed.
+// This is problematic when claims and OIDC tokens have to be passed. It might be worth looking deeper into ODRL requests to carry these claims instead of an UMA token.`))
 
   const accessGrantedResponse = await fetch(tokenEndpoint, {
     method: "POST",
@@ -259,7 +251,7 @@ This is problematic when claims and OIDC tokens have to be passed. It might be w
   log(`and the accompanying agreement:`, 
     JSON.stringify(access_token.contract, null, 2));
   
-  log(chalk.italic(`Future work: at a later stage, this agreements will be signed by both parties to form a binding contract.`))
+  // log(chalk.italic(`Future work: at a later stage, this agreements will be signed by both parties to form a binding contract.`))
 
   const accessWithTokenResponse = await fetch(terms.resources.smartwatch, {
     headers: { 'Authorization': `${tokenParams.token_type} ${tokenParams.access_token}` }

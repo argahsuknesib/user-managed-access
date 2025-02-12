@@ -29,8 +29,8 @@
             "webids": [
               "https://pod.rubendedecker.be/profile/card#me",
               "https://woslabbi.pod.knows.idlab.ugent.be/profile/card#me",
-              "http://localhost:3000/ruben/profile/card#me",
-              "http://localhost:3000/alice/profile/card#me"
+              "http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/profile/card#me",
+              "http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me"
             ]
           }
         },
@@ -42,8 +42,8 @@
             "webids": [
               "https://pod.rubendedecker.be/profile/card#me",
               "https://woslabbi.pod.knows.idlab.ugent.be/profile/card#me",
-              "http://localhost:3000/ruben/profile/card#me",
-              "http://localhost:3000/alice/profile/card#me"
+              "http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/profile/card#me",
+              "http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me"
             ]
           }
         }

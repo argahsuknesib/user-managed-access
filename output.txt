@@ -43,7 +43,7 @@ PREFIX ex: <http://example.org/>
 <http://example.org/HCPX-request-permission-purpose> a odrl:Constraint ;
     odrl:leftOperand odrl:purpose ; # can also be oac:Purpose, to conform with OAC profile
     odrl:operator odrl:eq ;
-    odrl:rightOperand ex:bariatric-care .
+    odrl:rightOperand ex:aggregation .
 
 <http://example.org/HCPX-request-permission-lb> a odrl:Constraint ;
     odrl:leftOperand oac:LegalBasis ;
@@ -53,7 +53,7 @@ PREFIX ex: <http://example.org/>
 ----------------------------------------------------
 
 The policy assigns read permissions for the personal doctor http://localhost:3000/alice/profile/card#me of the patient for the smartwatch resource 
-on the condition of the purpose of the request being "http://example.org/bariatric-care" and the legal basis being "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a".
+on the condition of the purpose of the request being "http://example.org/aggregation" and the legal basis being "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a".
 
 The doctor now tries to access the private smartwatch resource.
 
@@ -97,7 +97,7 @@ The doctor's client now gathers the necessary claims (how is out-of-scope for th
 
 
 {
-  'http://www.w3.org/ns/odrl/2/purpose': 'http://example.org/bariatric-care',
+  'http://www.w3.org/ns/odrl/2/purpose': 'http://example.org/aggregation',
   'urn:solidlab:uma:claims:types:webid': 'http://localhost:3000/alice/profile/card#me',
   'https://w3id.org/oac#LegalBasis': 'https://w3id.org/dpv/legal/eu/gdpr#A9-2-a'
 }
@@ -137,7 +137,7 @@ Together with the UMA grant_type and ticket requirements, these are bundled as a
           "leftOperand": "purpose",
           "operator": "eq",
           "rightOperand": {
-            "@id": "http://example.org/bariatric-care"
+            "@id": "http://example.org/aggregation"
           }
         },
         {
@@ -200,7 +200,7 @@ and the accompanying agreement:
           "leftOperand": "purpose",
           "operator": "eq",
           "rightOperand": {
-            "@id": "http://example.org/bariatric-care"
+            "@id": "http://example.org/aggregation"
           }
         }
       ]
