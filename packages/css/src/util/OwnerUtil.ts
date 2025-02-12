@@ -76,8 +76,8 @@ export class OwnerUtil {
 
   public async findIssuer(webid: string): Promise<string | undefined> {
     if (!this.umaServerURL) {
-      this.logger.warn(`No UMA Authorization Server variable set. Falling back on http://n063-03a.wall2.ilabt.iminds.be:4000/`)
-      return 'http://n063-03a.wall2.ilabt.iminds.be:4000/uma';
+      this.logger.warn(`No UMA Authorization Server variable set. Falling back on http://localhost:4000/`)
+      return 'http://localhost:4000/uma';
     }
     this.logger.verbose(`Using UMA Authorization Server at ${this.umaServerURL} for WebID ${webid}.`)
     return this.umaServerURL.endsWith('/') ? this.umaServerURL + 'uma' : this.umaServerURL + '/uma'
