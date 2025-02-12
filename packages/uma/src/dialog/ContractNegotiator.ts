@@ -138,7 +138,7 @@ export class ContractNegotiator implements Negotiator {
       // todo: dynamic URL
       // todo: fix instantiated from url
       // contract['http://www.w3.org/ns/prov#wasDerivedFrom'] = [ 'urn:ucp:be-gov:policy:d81b8118-af99-4ab3-b2a7-63f8477b6386 '] 
-      const instantiatedPolicyContainer = 'http://localhost:3000/ruben/settings/policies/instantiated/'; 
+      const instantiatedPolicyContainer = 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/settings/policies/'; 
       const policyCreationResponse = await fetch(instantiatedPolicyContainer, {
         method: 'POST',
         headers: { 'content-type': 'application/ld+json' },
