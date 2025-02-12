@@ -58,7 +58,7 @@ on the condition of the purpose of the request being "http://example.org/aggrega
 The doctor now tries to access the private smartwatch resource.
 
 First, a resource request is done without authorization that results in a 403 response and accompanying UMA ticket in the WWW-Authenticate header according to the UMA specification:
-UMA realm="solid", as_uri="http://localhost:4000/uma", ticket="d7d26537-7dc4-4bd4-befb-80e4fa30fa15"
+UMA realm="solid", as_uri="http://n063-02b.wall2.ilabt.iminds.be:4000/uma", ticket="d7d26537-7dc4-4bd4-befb-80e4fa30fa15"
 
 To the discovered AS, we now send a request for read permission to the target resource
 
