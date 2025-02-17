@@ -6,9 +6,9 @@ import { WinstonLogger } from '../src/util/logging/WinstonLogger';
 
 const protocol = 'http';
 const host = '0.0.0.0';
+const externalHost = 'n063-02b.wall2.ilabt.iminds.be'; 
 const port = 4000;
-
-const baseUrl = `${protocol}://${host}:${port}/uma`;
+const baseUrl = `${protocol}://${externalHost}:${port}/uma`;
 const rootDir = path.join(__dirname, '../');
 
 export const launch: () => Promise<void> = async () => {
