@@ -5,7 +5,7 @@ import { setLogger } from '../src/util/logging/LoggerUtils';
 import { WinstonLogger } from '../src/util/logging/WinstonLogger';
 
 const protocol = 'http';
-const host = 'n063-02b.wall2.ilabt.iminds.be';
+const host = '0.0.0.0';
 const port = 4000;
 
 const baseUrl = `${protocol}://${host}:${port}/uma`;
