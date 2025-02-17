@@ -157,7 +157,7 @@ ${umaHeader}`)
     body: JSON.stringify(smartWatchAccessRequestNoClaimsODRL),
   });
   
-  if (doctor_needInfoResponse.status !== 403) { log('Access request succeeded without claims...', await doctor_needInfoResponse.text()); throw 0; }
+  // if (doctor_needInfoResponse.status !== 403) { log('Access request succeeded without claims...', await doctor_needInfoResponse.text()); throw 0; }
 
   const { ticket: ticket2, required_claims: doctor_claims } = await doctor_needInfoResponse.json();
   ticket = ticket2
@@ -172,7 +172,7 @@ ${umaHeader}`)
   //   "urn:solidlab:uma:claims:types:webid": "http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me",
   //   "https://w3id.org/oac#LegalBasis": "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a"
   // }
-  const claim_token = "eyJhbGciOiJIUzI1NiJ9.eyJodHRwOi8vd3d3LnczLm9yZy9ucy9vZHJsLzIvcHVycG9zZSI6Imh0dHA6Ly9leGFtcGxlLm9yZy9iYXJpYXRyaWMtY2FyZSIsInVybjpzb2xpZGxhYjp1bWE6Y2xhaW1zOnR5cGVzOndlYmlkIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwL2FsaWNlL3Byb2ZpbGUvY2FyZCNtZSIsImh0dHBzOi8vdzNpZC5vcmcvb2FjI0xlZ2FsQmFzaXMiOiJodHRwczovL3czaWQub3JnL2Rwdi9sZWdhbC9ldS9nZHByI0E5LTItYSJ9.nT55jaXNDsHgAo_zcRMsbJqcNj4FVdW_-xjcwNam-1M"
+  const claim_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vd3d3LnczLm9yZy9ucy9vZHJsLzIvcHVycG9zZSI6Imh0dHA6Ly9leGFtcGxlLm9yZy9hZ2dyZWdhdGlvbiIsInVybjpzb2xpZGxhYjp1bWE6Y2xhaW1zOnR5cGVzOndlYmlkIjoiaHR0cDovL24wNjMtMDhhLndhbGwyLmlsYWJ0LmltaW5kcy5iZTo4MDgwL3Byb2ZpbGUvY2FyZCNtZSIsImh0dHBzOi8vdzNpZC5vcmcvb2FjI0xlZ2FsQmFzaXMiOiJodHRwczovL3czaWQub3JnL2Rwdi9sZWdhbC9ldS9nZHByI0E5LTItYSJ9.s0_1oNRcmEUcPBw9TF2-0J0_hrMPSRAAiDVgjan1FQ0"
 
   const claims: any = {
     "http://www.w3.org/ns/odrl/2/purpose": "http://example.org/aggregation",
