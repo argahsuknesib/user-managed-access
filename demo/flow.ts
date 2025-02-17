@@ -28,10 +28,10 @@ const terms = {
     location: 'http://www.w3.org/ns/solid/terms#location',
   },
   resources: {
-    smartwatch: 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/acc-x/'
+    smartwatch: 'http://n063-03a.wall2.ilabt.iminds.be:3000/pod1/acc-x/'
   },
   agents: {
-    ruben: 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/profile/card#me',
+    ruben: 'http://n063-03a.wall2.ilabt.iminds.be:3000/pod1/profile/card#me',
     alice: 'http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me',
   },
   scopes: {
@@ -39,7 +39,7 @@ const terms = {
   }
 }
 
-const policyContainer = 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/settings/policies/';
+const policyContainer = 'http://n063-03a.wall2.ilabt.iminds.be:3000/pod1/settings/policies/';
 
 async function main() {
 
@@ -232,7 +232,7 @@ ${umaHeader}`)
 // There are two main points of work here: right now the claim token gathers all claims internally, as only a single token can be passed.
 // This is problematic when claims and OIDC tokens have to be passed. It might be worth looking deeper into ODRL requests to carry these claims instead of an UMA token.`))
 
-  const accessGrantedResponse = await fetch("http://n063-02b.wall2.ilabt.iminds.be:4000/uma/token", {
+  const accessGrantedResponse = await fetch("http://n063-03a.wall2.ilabt.iminds.be:4000/uma/token", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(smartWatchAccessRequestODRL)

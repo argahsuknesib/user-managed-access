@@ -47,7 +47,7 @@
       },
       "overrideParameters": {
         "@type": "ContainerUCRulesStorage",
-        "containerURL": "http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/settings/policies/"
+        "containerURL": "http://n063-03a.wall2.ilabt.iminds.be:3000/pod1/settings/policies/"
       }
     }
   ]
