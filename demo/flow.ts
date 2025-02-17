@@ -39,7 +39,7 @@ const terms = {
   }
 }
 
-const policyContainer = 'http://n063-03a.wall2.ilabt.iminds.be:3000/pod1/settings/policies/';
+const policyContainer = 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/settings/policies/';
 
 async function main() {
 
