@@ -3,6 +3,8 @@
 import { fetch } from 'cross-fetch';
 import { Parser, Writer, Store } from 'n3';
 import { randomUUID } from 'crypto';
+import jwt from 'jsonwebtoken';
+
 // import chalk from 'chalk'
 
 import * as jsonld from 'jsonld';
@@ -16,8 +18,11 @@ import * as jsonld from 'jsonld';
 
 
 
+
 const parser = new Parser();
 const writer = new Writer();
+const secret = "ceci n'est pas un secret";
+const jwt_algorithm: jwt.Algorithm = 'HS256';
 
 const terms = {
   solid: {
@@ -28,10 +33,10 @@ const terms = {
     location: 'http://www.w3.org/ns/solid/terms#location',
   },
   resources: {
-    smartwatch: 'http://n063-03a.wall2.ilabt.iminds.be:3000/pod1/acc-x/'
+    smartwatch: 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/acc-x/'
   },
   agents: {
-    ruben: 'http://n063-03a.wall2.ilabt.iminds.be:3000/pod1/profile/card#me',
+    ruben: 'http://n063-02b.wall2.ilabt.iminds.be:3000/pod1/profile/card#me',
     alice: 'http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me',
   },
   scopes: {
@@ -46,7 +51,7 @@ async function main() {
   const webIdData = new Store(parser.parse(await (await fetch(terms.agents.ruben)).text()));
   const objects = webIdData.getObjects(null, terms.solid.umaServer, null);
   const umaServer = objects[0]?.id; // Assigns the first ID or null if no value exists
-  
+
   // const umaServer = webIdData.getObjects(terms.agents.ruben, terms.solid.umaServer, null)[0].value;
   const configUrl = new URL('.well-known/uma2-configuration', umaServer);
   const umaConfig = await (await fetch(configUrl)).json();
@@ -58,16 +63,16 @@ async function main() {
 
   log("This flow defines the retrieval by a doctor of a patient resource.")
   log(
-`Doctor WebID:     ${terms.agents.alice}
+    `Doctor WebID:     ${terms.agents.alice}
 Patient WebID:    ${terms.agents.ruben}
 Target Resource:  ${terms.resources.smartwatch}`)
 
   log('To protect this data, a policy is added restricting access to a specific healthcare employee for the purpose of bariatric care.');
- // log(chalk.italic(`Note: Policy management is out of scope for POC1, right now they are just served from a public container on the pod.
-//additionally, selecting relevant policies is not implemented at the moment, all policies are evaluated, but this is a minor fix in the AS.`))
-  
-  const healthcare_patient_policy = 
-  `PREFIX dcterms: <http://purl.org/dc/terms/>
+  // log(chalk.italic(`Note: Policy management is out of scope for POC1, right now they are just served from a public container on the pod.
+  //additionally, selecting relevant policies is not implemented at the moment, all policies are evaluated, but this is a minor fix in the AS.`))
+
+  const healthcare_patient_policy =
+    `PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX eu-gdpr: <https://w3id.org/dpv/legal/eu/gdpr#>
 PREFIX oac: <https://w3id.org/oac#>
 PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
@@ -121,7 +126,7 @@ on the condition of the purpose of the request being "http://example.org/aggrega
     method: "GET",
     headers: { "content-type": "application/json" },
   });
-  
+
   const umaHeader = await res.headers.get('WWW-Authenticate')
 
   log(`First, a resource request is done without authorization that results in a 403 response and accompanying UMA ticket in the WWW-Authenticate header according to the UMA specification:
@@ -137,14 +142,14 @@ ${umaHeader}`)
     profile: { "@id": "https://w3id.org/oac#" },
     uid: `http://example.org/HCPX-request/${randomUUID()}`,
     description: "HCP X requests to read Alice's health data for bariatric care.",
-    permission: [ {
+    permission: [{
       "@type": "Permission",
       "uid": `http://example.org/HCPX-request-permission/${randomUUID()}`,
       assigner: terms.agents.ruben,
       assignee: terms.agents.alice,
       action: { "@id": "https://w3id.org/oac#read" },
       target: terms.resources.smartwatch,
-    } ],
+    }],
     grant_type: "urn:ietf:params:oauth:grant-type:uma-ticket",
     ticket,
   }
@@ -156,12 +161,12 @@ ${umaHeader}`)
     headers: { "content-type": "application/json" },
     body: JSON.stringify(smartWatchAccessRequestNoClaimsODRL),
   });
-  
+
   // if (doctor_needInfoResponse.status !== 403) { log('Access request succeeded without claims...', await doctor_needInfoResponse.text()); throw 0; }
 
   const { ticket: ticket2, required_claims: doctor_claims } = await doctor_needInfoResponse.json();
   ticket = ticket2
-  
+
   log(`Based on the policy set above, the Authorization Server requests the following claims from the doctor:`);
   doctor_claims.claim_token_format[0].forEach((format: string) => log(`  - ${format}`))
   log(`accompanied by an updated ticket: ${ticket}.`)
@@ -172,6 +177,8 @@ ${umaHeader}`)
   //   "urn:solidlab:uma:claims:types:webid": "http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me",
   //   "https://w3id.org/oac#LegalBasis": "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a"
   // }
+
+
   const claim_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vd3d3LnczLm9yZy9ucy9vZHJsLzIvcHVycG9zZSI6Imh0dHA6Ly9leGFtcGxlLm9yZy9hZ2dyZWdhdGlvbiIsInVybjpzb2xpZGxhYjp1bWE6Y2xhaW1zOnR5cGVzOndlYmlkIjoiaHR0cDovL24wNjMtMDhhLndhbGwyLmlsYWJ0LmltaW5kcy5iZTo4MDgwL3Byb2ZpbGUvY2FyZCNtZSIsImh0dHBzOi8vdzNpZC5vcmcvb2FjI0xlZ2FsQmFzaXMiOiJodHRwczovL3czaWQub3JnL2Rwdi9sZWdhbC9ldS9nZHByI0E5LTItYSJ9.s0_1oNRcmEUcPBw9TF2-0J0_hrMPSRAAiDVgjan1FQ0"
 
   const claims: any = {
@@ -179,6 +186,17 @@ ${umaHeader}`)
     "urn:solidlab:uma:claims:types:webid": "http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me",
     "https://w3id.org/oac#LegalBasis": "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a"
   }
+
+  const payload = {
+    ...claims
+  };
+
+  const token = jwt.sign(payload, secret, {
+    algorithm: jwt_algorithm,
+  });
+
+  console.log(token);
+  
 
   log(`The doctor's client now gathers the necessary claims (how is out-of-scope for this demo)`, claims)
 
@@ -193,7 +211,7 @@ ${umaHeader}`)
     profile: { "@id": "https://w3id.org/oac#" },
     uid: `http://example.org/HCPX-request/${randomUUID()}`,
     description: "HCP X requests to read Alice's health data for bariatric care.",
-    permission: [ {
+    permission: [{
       "@type": "Permission",
       "@id": `http://example.org/HCPX-request-permission/${randomUUID()}`,
       target: terms.resources.smartwatch,
@@ -212,13 +230,13 @@ ${umaHeader}`)
           "@id": `http://example.org/HCPX-request-permission-purpose/${randomUUID()}`,
           leftOperand: { "@id": "https://w3id.org/oac#LegalBasis" },
           operator: "eq",
-          rightOperand: {"@id": "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a" },
+          rightOperand: { "@id": "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a" },
         }
       ],
-    } ],
+    }],
     // claims: [{
-      claim_token: claim_token, 
-      claim_token_format: "urn:solidlab:uma:claims:formats:jwt",
+    claim_token: claim_token,
+    claim_token_format: "urn:solidlab:uma:claims:formats:jwt",
     // }],
     // UMA specific fields
     grant_type: "urn:ietf:params:oauth:grant-type:uma-ticket",
@@ -227,10 +245,10 @@ ${umaHeader}`)
 
   log('Together with the UMA grant_type and ticket requirements, these are bundled as an ODRL Request and sent back to the Authorization Server')
   log(JSON.stringify(smartWatchAccessRequestODRL, null, 2))
-  
+
   //log(chalk.italic(`Note: the ODRL Request constraints are not yet evaluated as claims, only the passed claim token is.
-// There are two main points of work here: right now the claim token gathers all claims internally, as only a single token can be passed.
-// This is problematic when claims and OIDC tokens have to be passed. It might be worth looking deeper into ODRL requests to carry these claims instead of an UMA token.`))
+  // There are two main points of work here: right now the claim token gathers all claims internally, as only a single token can be passed.
+  // This is problematic when claims and OIDC tokens have to be passed. It might be worth looking deeper into ODRL requests to carry these claims instead of an UMA token.`))
 
   const accessGrantedResponse = await fetch("http://n063-03a.wall2.ilabt.iminds.be:4000/uma/token", {
     method: "POST",
@@ -238,19 +256,19 @@ ${umaHeader}`)
     body: JSON.stringify(smartWatchAccessRequestODRL)
   });
 
-  if (accessGrantedResponse.status !== 200) { 
-    log('Access request failed despite policy...', JSON.stringify(await accessGrantedResponse.text(), null, 2)); throw 0; 
+  if (accessGrantedResponse.status !== 200) {
+    log('Access request failed despite policy...', JSON.stringify(await accessGrantedResponse.text(), null, 2)); throw 0;
   }
 
   const tokenParams = await accessGrantedResponse.json();
   const access_token = parseJwt(tokenParams.access_token)
 
-  log(`The UMA server checks the claims with the relevant policy, and returns the agent an access token with the requested permissions.`, 
+  log(`The UMA server checks the claims with the relevant policy, and returns the agent an access token with the requested permissions.`,
     JSON.stringify(access_token.permissions, null, 2));
-  
-  log(`and the accompanying agreement:`, 
+
+  log(`and the accompanying agreement:`,
     JSON.stringify(access_token.contract, null, 2));
-  
+
   // log(chalk.italic(`Future work: at a later stage, this agreements will be signed by both parties to form a binding contract.`))
 
   const accessWithTokenResponse = await fetch(terms.resources.smartwatch, {
@@ -260,7 +278,7 @@ ${umaHeader}`)
   log(`Now the doctor can retrieve the resource:`, await accessWithTokenResponse.text());
 
   if (accessWithTokenResponse.status !== 200) { log(`Access with token failed...`); throw 0; }
-  
+
 }
 
 main();
@@ -268,7 +286,7 @@ main();
 
 /* Helper functions */
 
-function parseJwt (token:string) {
+function parseJwt(token: string) {
   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
 

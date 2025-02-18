@@ -70,6 +70,7 @@
     "get-jwks": "^9.0.1",
     "http-message-signatures": "^1.0.4",
     "jose": "^4.5.1",
+    "jsonwebtoken": "^9.0.2",
     "koreografeye": "^0.4.8",
     "logform": "^2.6.0",
     "n3": "^1.17.2",
