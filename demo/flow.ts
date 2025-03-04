@@ -127,7 +127,11 @@ on the condition of the purpose of the request being "http://example.org/aggrega
     headers: { "content-type": "application/json" },
   });
 
+  console.log(res.status);
+
   const umaHeader = await res.headers.get('WWW-Authenticate')
+  console.log(umaHeader);
+  
 
   log(`First, a resource request is done without authorization that results in a 403 response and accompanying UMA ticket in the WWW-Authenticate header according to the UMA specification:
 ${umaHeader}`)
@@ -178,9 +182,6 @@ ${umaHeader}`)
   //   "https://w3id.org/oac#LegalBasis": "https://w3id.org/dpv/legal/eu/gdpr#A9-2-a"
   // }
 
-
-  const claim_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vd3d3LnczLm9yZy9ucy9vZHJsLzIvcHVycG9zZSI6Imh0dHA6Ly9leGFtcGxlLm9yZy9hZ2dyZWdhdGlvbiIsInVybjpzb2xpZGxhYjp1bWE6Y2xhaW1zOnR5cGVzOndlYmlkIjoiaHR0cDovL24wNjMtMDhhLndhbGwyLmlsYWJ0LmltaW5kcy5iZTo4MDgwL3Byb2ZpbGUvY2FyZCNtZSIsImh0dHBzOi8vdzNpZC5vcmcvb2FjI0xlZ2FsQmFzaXMiOiJodHRwczovL3czaWQub3JnL2Rwdi9sZWdhbC9ldS9nZHByI0E5LTItYSJ9.s0_1oNRcmEUcPBw9TF2-0J0_hrMPSRAAiDVgjan1FQ0"
-
   const claims: any = {
     "http://www.w3.org/ns/odrl/2/purpose": "http://example.org/aggregation",
     "urn:solidlab:uma:claims:types:webid": "http://n063-08a.wall2.ilabt.iminds.be:8080/profile/card#me",
@@ -194,14 +195,12 @@ ${umaHeader}`)
   const token = jwt.sign(payload, secret, {
     algorithm: jwt_algorithm,
   });
-
-  console.log(token);
   
 
   log(`The doctor's client now gathers the necessary claims (how is out-of-scope for this demo)`, claims)
 
   log(`and bundles them as an UMA-compliant JWT.`, {
-    claim_token: claim_token,
+    claim_token: token,
     claim_token_format: "urn:solidlab:uma:claims:formats:jwt"
   })
 
@@ -235,7 +234,7 @@ ${umaHeader}`)
       ],
     }],
     // claims: [{
-    claim_token: claim_token,
+    claim_token: token,
     claim_token_format: "urn:solidlab:uma:claims:formats:jwt",
     // }],
     // UMA specific fields
