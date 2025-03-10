@@ -25,7 +25,7 @@
     "css:config/util/index/default.json",
     "css:config/util/logging/winston.json",
     "css:config/util/representation-conversion/default.json",
-    "css:config/util/resource-locker/memory.json",
+    "css:config/util/resource-locker/redis.json",
     "css:config/util/variables/default.json",
     "uma-css:config/uma/default.json",
     "uma-css:config/http/handler/default.json",

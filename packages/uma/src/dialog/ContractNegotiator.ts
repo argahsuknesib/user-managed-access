@@ -91,7 +91,15 @@ export class ContractNegotiator implements Negotiator {
       if (resolved.success) {
         this.logger.debug('Ticket resolved succesfully.', resolved)
         // todo: get necessary information here for contract creation
-        contract = this.contractManager.createContract(resolved.value)
+        const permissions = resolved.value;
+        // Make this dynamic for the assigner and assignee
+        const options = {
+          assigner: 'https://example.com/assigner',
+          assignee: 'https://example.com/assignee',
+          description: 'A new contract',
+          constraints: []
+        }
+        contract = this.contractManager.createContract(permissions, options)
         if (contract) result = Success(contract)
         else throw new Error('It should not be possible to get an incorrect contract with a resolved policy evaluation')
 
