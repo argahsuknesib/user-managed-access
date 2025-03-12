@@ -3,13 +3,13 @@
     "email": "alice@example.org",
     "password": "abc123",
     "authz": {
-      "server": "http://n063-03a.wall2.ilabt.iminds.be:4000/uma"
+      "server": "http://n063-02b.wall2.ilabt.iminds.be:4000/uma"
     },
     "pods": [{ 
       "name": "alice",
       "settings": {
         "name": "Alice",
-        "umaServer": "http://n063-03a.wall2.ilabt.iminds.be:4000/uma"
+        "umaServer": "http://n063-02b.wall2.ilabt.iminds.be:4000/uma"
       }
     }]
   },
@@ -17,14 +17,14 @@
     "email": "bob@example.org",
     "password": "abc123",
     "authz": {
-      "server": "http://n063-03a.wall2.ilabt.iminds.be:4000/uma"
+      "server": "http://n063-02b.wall2.ilabt.iminds.be:4000/uma"
     },
     "pods": [
       {
         "name": "bob",
         "settings": {
           "name": "Bob",
-          "umaServer": "http://n063-03a.wall2.ilabt.iminds.be:4000/uma"
+          "umaServer": "http://n063-02b.wall2.ilabt.iminds.be:4000/uma"
         }
       }
     ]
@@ -33,14 +33,14 @@
     "email": "demo@example.org",
     "password": "abc123",
     "authz": {
-      "server": "http://n063-03a.wall2.ilabt.iminds.be:4000/uma"
+      "server": "http://n063-02b.wall2.ilabt.iminds.be:4000/uma"
     },
     "pods": [
       {
         "name": "demo",
         "settings": {
           "name": "Demo",
-          "umaServer": "http://n063-03a.wall2.ilabt.iminds.be:4000/uma"
+          "umaServer": "http://n063-02b.wall2.ilabt.iminds.be:4000/uma"
         }
       }
     ]
