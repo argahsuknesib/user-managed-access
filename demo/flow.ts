@@ -261,6 +261,8 @@ ${umaHeader}`)
 
   const tokenParams = await accessGrantedResponse.json();
   const access_token = parseJwt(tokenParams.access_token)
+  console.log(`Token Param is`,tokenParams);
+  
 
   log(`The UMA server checks the claims with the relevant policy, and returns the agent an access token with the requested permissions.`,
     JSON.stringify(access_token.permissions, null, 2));
