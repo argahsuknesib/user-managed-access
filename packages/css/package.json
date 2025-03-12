@@ -60,9 +60,9 @@
     "build:ts": "yarn run -T tsc",
     "build:components": "yarn run -T componentsjs-generator -r uma-css -s src/ -c dist/components -i .componentsignore --lenient",
     "test": "yarn run -T jest --coverage",
-    "start": "yarn run community-solid-server -m . -c ./config/default.json --seedConfig ./config/seed.json",
-    "demo": "yarn run demo:setup && yarn run demo:start",
+    "start": "sudo yarn run community-solid-server -m . -c ./config/default.json -f /users/kbisenug/data/ -b http://n063-02b.wall2.ilabt.iminds.be:3000/ --logging-level debug --seedConfig ./config/seed.json",
     "demo:setup": "yarn run -T shx rm -rf ./tmp && yarn run -T shx cp -R ../../demo/data ./tmp",
+    "demo": "yarn run demo:setup && yarn run demo:start",
     "demo:start": "yarn run community-solid-server -m . -c ./config/demo.json -f ./tmp",
     "start:css": "sudo yarn run community-solid-server -m . -c ./config/demo.json -f /users/kbisenug/data/ -b http://n063-02b.wall2.ilabt.iminds.be:3000/ --logging-level debug"
   },
