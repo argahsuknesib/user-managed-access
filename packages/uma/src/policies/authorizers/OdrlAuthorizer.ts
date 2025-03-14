@@ -1,15 +1,15 @@
-import {Authorizer} from "./Authorizer";
-import {basicPolicy, ODRL, UCPPolicy, UCRulesStorage} from "@solidlab/ucp";
-import {WEBID} from "../../credentials/Claims";
-import {ODRLEvaluator, ODRLEngineMultipleSteps, EyeReasoner } from 'odrl-evaluator'
-import {DataFactory, Literal, NamedNode, Quad_Subject, Store } from "n3";
-import {createVocabulary, DC, RDF} from "@solid/community-server";
+import { Authorizer } from "./Authorizer";
+import { basicPolicy, ODRL, UCPPolicy, UCRulesStorage } from "@solidlab/ucp";
+import { WEBID } from "../../credentials/Claims";
+import { ODRLEvaluator, ODRLEngineMultipleSteps, EyeReasoner } from 'odrl-evaluator'
+import { DataFactory, Literal, NamedNode, Quad_Subject, Store } from "n3";
+import { createVocabulary, DC, RDF } from "@solid/community-server";
 import { Logger } from "../../util/logging/Logger";
-import {getLoggerFor} from "../../util/logging/LoggerUtils";
-import {ClaimSet} from "../../credentials/ClaimSet";
-import {Permission} from "../../views/Permission";
-import {Requirements} from "../../credentials/Requirements";
-const {quad, namedNode, literal} = DataFactory
+import { getLoggerFor } from "../../util/logging/LoggerUtils";
+import { ClaimSet } from "../../credentials/ClaimSet";
+import { Permission } from "../../views/Permission";
+import { Requirements } from "../../credentials/Requirements";
+const { quad, namedNode, literal } = DataFactory
 
 /**
  * Permission evaluation is performed as follows:
@@ -40,13 +40,14 @@ export class OdrlAuthorizer implements Authorizer {
     constructor(
         private readonly policies: UCRulesStorage,
     ) {
-        const engine = new ODRLEngineMultipleSteps(new EyeReasoner('/usr/local/bin/eye', ["--quiet", "--nope", "--pass-only-new"]));
-        // const engine = new ODRLEngineMultipleSteps();
+        // const engine = new ODRLEngineMultipleSteps(new EyeReasoner('/usr/local/bin/eye', ["--quiet", "--nope", "--pass-only-new"]));
+        // Using the RSP-JS engine
+        const engine = new ODRLEngineMultipleSteps();
         this.odrlEvaluator = new ODRLEvaluator(engine);
     }
 
     public async permissions(claims: ClaimSet, query?: Permission[]): Promise<Permission[]> {
-        this.logger.info('Calculating permissions.', {claims, query});
+        this.logger.info('Calculating permissions.', { claims, query });
         if (!query) {
             this.logger.warn('The OdrlAuthorizer can only calculate permissions for explicit queries.')
             return [];
@@ -65,7 +66,7 @@ export class OdrlAuthorizer implements Authorizer {
         const subject = typeof claims[WEBID] === 'string' ? claims[WEBID] : 'urn:solidlab:uma:id:anonymous';
 
 
-        for (const {resource_id, resource_scopes} of query) {
+        for (const { resource_id, resource_scopes } of query) {
             if (!resource_id) {
                 this.logger.warn('The OdrlAuthorizer can only calculate permissions for explicit resources.');
                 continue;
@@ -76,7 +77,7 @@ export class OdrlAuthorizer implements Authorizer {
             for (const action of actions) {
                 this.logger.info(`Evaluating Request [S R AR]: [${subject} ${resource_id} ${action}]`);
                 const requestPolicy: UCPPolicy = {
-                    type: ODRL.Request,
+                    type: 'http://www.w3.org/ns/odrl/2/Request',
                     rules: [
                         {
                             action: action,
@@ -111,7 +112,7 @@ export class OdrlAuthorizer implements Authorizer {
             resource_id => permissions.push({
                 resource_id,
                 resource_scopes: transformActionsOdrlToCss(grantedPermissions[resource_id])
-            }) );
+            }));
         return permissions;
     }
 
@@ -121,13 +122,13 @@ export class OdrlAuthorizer implements Authorizer {
 
 }
 const scopeCssToOdrl: Map<string, string> = new Map();
-scopeCssToOdrl.set('urn:example:css:modes:read','http://www.w3.org/ns/odrl/2/read');
-scopeCssToOdrl.set('urn:example:css:modes:append','http://www.w3.org/ns/odrl/2/append');
-scopeCssToOdrl.set('urn:example:css:modes:create','http://www.w3.org/ns/odrl/2/create');
-scopeCssToOdrl.set('urn:example:css:modes:delete','http://www.w3.org/ns/odrl/2/delete');
-scopeCssToOdrl.set('urn:example:css:modes:write','http://www.w3.org/ns/odrl/2/write');
+scopeCssToOdrl.set('urn:example:css:modes:read', 'http://www.w3.org/ns/odrl/2/read');
+scopeCssToOdrl.set('urn:example:css:modes:append', 'http://www.w3.org/ns/odrl/2/append');
+scopeCssToOdrl.set('urn:example:css:modes:create', 'http://www.w3.org/ns/odrl/2/create');
+scopeCssToOdrl.set('urn:example:css:modes:delete', 'http://www.w3.org/ns/odrl/2/delete');
+scopeCssToOdrl.set('urn:example:css:modes:write', 'http://www.w3.org/ns/odrl/2/write');
 
-const scopeOdrlToCss : Map<string, string> = new Map(Array.from(scopeCssToOdrl, entry => [entry[1], entry[0]]));
+const scopeOdrlToCss: Map<string, string> = new Map(Array.from(scopeCssToOdrl, entry => [entry[1], entry[0]]));
 
 /**
  * Transform the Actions enforced by the Community Solid Server to equivalent ODRL Actions
@@ -147,7 +148,7 @@ function transformActionsCssToOdrl(actions: string[]): string[] {
 function transformActionsOdrlToCss(actions: string[]): string[] {
     const cssActions = []
     for (const action of actions) {
-        if (action === 'http://www.w3.org/ns/odrl/2/use'){
+        if (action === 'http://www.w3.org/ns/odrl/2/use') {
             return Array.from(scopeCssToOdrl.keys());
         }
         cssActions.push(scopeOdrlToCss.get(action)!);
@@ -173,7 +174,7 @@ type RuleReport = {
 
 type PremiseReport = {
     id: NamedNode;
-    type:PremiseReportType;
+    type: PremiseReportType;
     premiseReport: PremiseReport[];
     satisfactionState: SatisfactionState
 }
@@ -181,13 +182,13 @@ type PremiseReport = {
 // is it possible to just use CR.namespace + "term"?
 // https://github.com/microsoft/TypeScript/issues/40793
 enum RuleReportType {
-    PermissionReport= 'http://example.com/report/temp/PermissionReport',
-    ProhibitionReport= 'http://example.com/report/temp/ProhibitionReport',
-    ObligationReport= 'http://example.com/report/temp/ObligationReport',
+    PermissionReport = 'http://example.com/report/temp/PermissionReport',
+    ProhibitionReport = 'http://example.com/report/temp/ProhibitionReport',
+    ObligationReport = 'http://example.com/report/temp/ObligationReport',
 }
 enum SatisfactionState {
-    Satisfied= 'http://example.com/report/temp/Satisfied',
-    Unsatisfied= 'http://example.com/report/temp/Unsatisfied',
+    Satisfied = 'http://example.com/report/temp/Satisfied',
+    Unsatisfied = 'http://example.com/report/temp/Unsatisfied',
 }
 
 enum PremiseReportType {
@@ -198,8 +199,8 @@ enum PremiseReportType {
 }
 
 enum ActivationState {
-    Active= 'http://example.com/report/temp/Active',
-    Inactive= 'http://example.com/report/temp/Inactive',
+    Active = 'http://example.com/report/temp/Active',
+    Inactive = 'http://example.com/report/temp/Inactive',
 }
 
 /**
@@ -208,13 +209,13 @@ enum ActivationState {
  * @param store
  */
 function parseComplianceReport(identifier: Quad_Subject, store: Store): PolicyReport {
-    const exists = store.getQuads(identifier,RDF.type,CR.PolicyReport, null).length === 1;
+    const exists = store.getQuads(identifier, RDF.type, CR.PolicyReport, null).length === 1;
     if (!exists) { throw Error(`No Policy Report found with: ${identifier}.`); }
     const ruleReportNodes = store.getObjects(identifier, CR.ruleReport, null) as NamedNode[];
 
     return {
         id: identifier as NamedNode,
-        created: store.getObjects(identifier, DC.namespace+"created", null)[0] as Literal,
+        created: store.getObjects(identifier, DC.namespace + "created", null)[0] as Literal,
         policy: store.getObjects(identifier, CR.policy, null)[0] as NamedNode,
         request: store.getObjects(identifier, CR.policyRequest, null)[0] as NamedNode,
         ruleReport: ruleReportNodes.map(ruleReportNode => parseRuleReport(ruleReportNode, store))
@@ -227,7 +228,7 @@ function parseComplianceReport(identifier: Quad_Subject, store: Store): PolicyRe
  * @param store
  */
 function parseRuleReport(identifier: Quad_Subject, store: Store): RuleReport {
-    const premiseNodes = store.getObjects(identifier,CR.premiseReport, null) as NamedNode[];
+    const premiseNodes = store.getObjects(identifier, CR.premiseReport, null) as NamedNode[];
     return {
         id: identifier as NamedNode,
         type: store.getObjects(identifier, RDF.type, null)[0].value as RuleReportType,
@@ -294,4 +295,4 @@ const CR = createVocabulary('http://example.com/report/temp/',
     'deonticState',
     'constraint',
     'satisfactionState',
-    )
+)
