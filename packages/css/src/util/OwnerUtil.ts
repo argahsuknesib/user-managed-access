@@ -74,7 +74,8 @@ export class OwnerUtil {
   }
 
   public async findIssuer(webid: string): Promise<string | undefined> {
-    return 'http://localhost:4000/uma';
+    // HARDCODING the findIssuer to the UMA server, will change if this works.
+    return 'http://n063-03a.wall2.ilabt.iminds.be:4000/uma';
 
     // TODO: softcode
 
