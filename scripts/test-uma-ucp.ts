@@ -3,7 +3,7 @@
 import { fetch } from 'cross-fetch'
 
 // Resource and WebID as set in config/rules/policy/policy0.ttl
-const resource = "http://localhost:3000/alice/other/resource.txt";
+const resource = "http://n063-02b.wall2.ilabt.iminds.be:3000/alice/other/resource.txt";
 const webid = "https://woslabbi.pod.knows.idlab.ugent.be/profile/card#me";
 
 function parseJwt (token:string) {

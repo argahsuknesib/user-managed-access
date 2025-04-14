@@ -41,7 +41,7 @@ export class OdrlAuthorizer implements Authorizer {
         private readonly policies: UCRulesStorage,
     ) {
         // const engine = new ODRLEngineMultipleSteps(new EyeReasoner('/usr/local/bin/eye', ["--quiet", "--nope", "--pass-only-new"]));
-        // Using the RSP-JS engine
+        // Using the EYE-JS engine
         const engine = new ODRLEngineMultipleSteps();
         this.odrlEvaluator = new ODRLEvaluator(engine);
     }
@@ -77,7 +77,7 @@ export class OdrlAuthorizer implements Authorizer {
             for (const action of actions) {
                 this.logger.info(`Evaluating Request [S R AR]: [${subject} ${resource_id} ${action}]`);
                 const requestPolicy: UCPPolicy = {
-                    type: 'http://www.w3.org/ns/odrl/2/Request',
+                    type: ODRL.Request,
                     rules: [
                         {
                             action: action,
