@@ -49,3 +49,11 @@ ex:replayerPermission1 odrl:action odrl:modify, odrl:read, odrl:create, odrl:app
 ex:replayerPermission1 odrl:target <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/acc-x/>, <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/acc-y/>, <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/acc-z/>  .
 ex:replayerPermission1 odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> .
 ex:replayerPermission1 odrl:assigner <http://n063-02b.wall2.ilabt.iminds.be/pod1/profile/card#me> .
+
+ex:replayerPolicy1 a odrl:Agreement .
+ex:replayerPolicy1 odrl:permission ex:replayerPermission1 .
+ex:replayerPermission1 a odrl:Permission .
+ex:replayerPermission1 odrl:action odrl:modify, odrl:read, odrl:create, odrl:append .
+ex:replayerPermission1 odrl:target <http://n063-02b.wall2.ilabt.iminds.be:3000/.notifications/WebhookChannel2023/> .
+ex:replayerPermission1 odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> .
+ex:replayerPermission1 odrl:assigner <http://n063-02b.wall2.ilabt.iminds.be/pod1/profile/card#me> .
