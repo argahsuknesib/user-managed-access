@@ -30,22 +30,6 @@
           "@id": "urn:solid-server:default:MetadataStrategy"
         }
       }
-    },
-    {
-      "@type": "Override",
-      "overrideInstance": {
-        "@id": "urn:solid-server:default:WebhookSubscriber"
-      },
-      "overrideParameters": {
-        "@type": "NotificationSubscriber",
-        "credentialsExtractor": {
-          "@type": "PublicCredentialsExtractor"
-        },
-        "permissionReader": {
-          "@type": "AllStaticReader",
-          "allow": true
-        }
-      }
     }
   ]
 }

@@ -40,6 +40,22 @@
   "@graph": [
     {
       "comment": "A single-pod server that trusts a pre-configured UMA AS."
+    },
+    {
+      "@type": "Override",
+      "overrideInstance": {
+        "@id": "urn:solid-server:default:WebhookSubscriber"
+      },
+      "overrideParameters": {
+        "@type": "NotificationSubscriber",
+        "credentialsExtractor": {
+          "@type": "PublicCredentialsExtractor"
+        },
+        "permissionReader": {
+          "@type": "AllStaticReader",
+          "allow": true
+        }
+      }
     }
   ]
 }
