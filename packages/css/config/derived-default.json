@@ -1,0 +1,12 @@
+{
+    "@context": [
+      "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
+      "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/derived-resources-component/^1.0.0/components/context.jsonld"
+    ],
+    "import": [
+      "css:config/default.json",
+      "derived:config/derived.json"
+    ],
+    "@graph": []
+  }
+  
