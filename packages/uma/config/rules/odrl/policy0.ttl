@@ -56,4 +56,12 @@ ex:replayerPermission1 a odrl:Permission .
 ex:replayerPermission1 odrl:action odrl:modify, odrl:read, odrl:create, odrl:append .
 ex:replayerPermission1 odrl:target <http://n063-02b.wall2.ilabt.iminds.be:3000/.notifications/WebhookChannel2023/> .
 ex:replayerPermission1 odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> .
-ex:replayerPermission1 odrl:assigner <http://n063-02b.wall2.ilabt.iminds.be/pod1/profile/card#me> .
+ex:replayerPermission1 odrl:assigner <http://n063-02b.wall2.ilabt.iminds.be/alice/profile/card#me> .
+
+ex:examplePolicy a odrl:Agreement .
+ex:examplePolicy odrl:permission ex:examplePermission .
+ex:examplePermission a odrl:Permission .
+ex:examplePermission odrl:action odrl:modify, odrl:read, odrl:create, odrl:append .
+ex:examplePermission odrl:target <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/other/derived/> .
+ex:examplePermission odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> .
+ex:examplePermission odrl:assigner <http://n063-02b.wall2.ilabt.iminds.be/alice/profile/card#me> .
