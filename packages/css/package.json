@@ -69,7 +69,7 @@
 
   },
   "dependencies": {
-    "@solid/community-server": "^7.0.2",
+    "@solid/community-server": "^7.1.7",
     "@solidlab/derived-resources-component": "^1.2.0",
     "@solidlab/uma": "workspace:^", 
     "componentsjs": "^5.4.2",

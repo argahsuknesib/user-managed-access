@@ -1,7 +1,8 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^7.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/uma-css/^0.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/uma-css/^0.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/derived-resources-component/^1.0.0/components/context.jsonld"
   ],
   "import": [
     "css:config/app/main/default.json",
@@ -35,7 +36,8 @@
     "uma-css:config/ldp/metadata-writer/uma.json",
     "uma-css:config/identity/handler/default.json",
     "uma-css:config/app/init/initialize-intro.json",
-    "css:config/storage/location/pod.json"
+    "css:config/storage/location/pod.json",
+    "derived:config/derived.json"
   ],
   "@graph": [
     {
