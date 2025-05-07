@@ -8,3 +8,11 @@ ex:replayerPermission1 odrl:action odrl:modify, odrl:read, odrl:create, odrl:app
 ex:replayerPermission1 odrl:target <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/acc-x/>, <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/acc-y/>, <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/acc-z/>  ,<http://n063-02b.wall2.ilabt.iminds.be:3000/alice/derived/acc-x>, <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/derived/acc-y>, <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/derived/acc-z> .
 ex:replayerPermission1 odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> .
 ex:replayerPermission1 odrl:assigner <http://n063-02b.wall2.ilabt.iminds.be/alice/profile/card#me> .
+
+ex:aggregatorPolicy a odrl:Agreement .
+ex:aggregatorPolicy odrl:permission ex:aggregatorPolicy .
+ex:aggregatorPolicy a odrl:Permission .
+ex:aggregatorPolicy odrl:action odrl:read .
+ex:aggregatorPolicy odrl:target <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/derived/acc-x>, <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/derived/acc-y>, <http://n063-02b.wall2.ilabt.iminds.be:3000/alice/derived/acc-z> .
+ex:aggregatorPolicy odrl:assignee <http://n063-08a.wall2.ilabt.iminds.be/#me> .
+ex:aggregatorPolicy odrl:assigner <http://n063-02b.wall2.ilabt.iminds.be/alice/profile/card#me> .
