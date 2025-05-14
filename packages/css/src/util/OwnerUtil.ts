@@ -1,5 +1,7 @@
-import { KeyValueStorage, PodStore, ResourceIdentifier, StorageLocationStrategy, WrappedSetMultiMap, 
-  getLoggerFor } from '@solid/community-server';
+import {
+  KeyValueStorage, PodStore, ResourceIdentifier, StorageLocationStrategy, WrappedSetMultiMap,
+  getLoggerFor
+} from '@solid/community-server';
 import { ACCOUNT_SETTINGS_AUTHZ_SERVER, type AccountStore } from '../identity/interaction/account/util/AccountStore';
 
 /**
@@ -19,7 +21,7 @@ export class OwnerUtil {
     protected accountStore: AccountStore,
     protected storageStrategy: StorageLocationStrategy,
     protected umaPatStore: KeyValueStorage<string, { issuer: string, pat: string }>,
-  ) {}
+  ) { }
 
   /**
    * Find the storage resource of the pod containing the given resource.
@@ -30,6 +32,12 @@ export class OwnerUtil {
     try {
       return (await this.storageStrategy.getStorageIdentifier(resource));
     } catch {
+      console.log(`Resource identifier is ${await this.storageStrategy.getStorageIdentifier(resource)}`);
+
+      console.log(`Unable to find storage for ${resource.path}`);
+      this.logger.debug(`Unable to find storage for ${resource.path}`);
+      console.log(`Resource is ${resource}`);
+
       throw new Error(`Unable to find root storage for ${resource}`);
     }
   }
@@ -58,7 +66,7 @@ export class OwnerUtil {
   public async findCommonOwner(resources: Iterable<ResourceIdentifier>): Promise<string> {
     const resourceSet = new Set(resources);
     const ownerMap = new WrappedSetMultiMap<string, string>();
-    
+
     for (const target of resourceSet) {
       const storage = await this.findStorage(target);
       const owners = await this.findOwners(storage);
