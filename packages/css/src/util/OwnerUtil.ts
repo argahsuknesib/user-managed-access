@@ -30,9 +30,11 @@ export class OwnerUtil {
     this.logger.debug(`Looking up storage containing ${resource.path}`);
 
     try {
+            this.logger.debug(`Resource identifier is ${await this.storageStrategy.getStorageIdentifier(resource)}`);
+
       return (await this.storageStrategy.getStorageIdentifier(resource));
     } catch {
-      console.log(`Resource identifier is ${await this.storageStrategy.getStorageIdentifier(resource)}`);
+      this.logger.debug(`Resource identifier is ${await this.storageStrategy.getStorageIdentifier(resource)}`);
 
       console.log(`Unable to find storage for ${resource.path}`);
       this.logger.debug(`Unable to find storage for ${resource.path}`);
