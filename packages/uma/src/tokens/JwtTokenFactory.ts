@@ -32,7 +32,7 @@ export class JwtTokenFactory extends TokenFactory {
   constructor(
     private readonly keyGen: JwkGenerator, 
     private readonly issuer: string,
-    private readonly params: JwtTokenParams = {expirationTime: '30000m', aud: 'solid'}
+    private readonly params: JwtTokenParams = {expirationTime: '1y', aud: 'solid'}
   ) {
     super();
   }
