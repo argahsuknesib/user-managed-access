@@ -1,6 +1,6 @@
 import { Mocked } from 'vitest';
 import { EmptyContainerInitializer } from '../../../src/init/EmptyContainerInitializer';
-import { BasicRepresentation, ResourceStore } from '@solid/community-server';
+import { BasicRepresentation, CONTENT_TYPE, ResourceStore } from '@solid/community-server';
 
 describe('EmptyContainerInitializer', (): void => {
   const baseUrl = 'http://example.com/';
@@ -33,6 +33,6 @@ describe('EmptyContainerInitializer', (): void => {
     await expect(initializer.handle()).resolves.toBeUndefined();
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
     expect(store.setRepresentation.mock.calls[0][0].path).toBe('http://example.com/foo/');
-    expect(store.setRepresentation.mock.calls[0][1].isEmpty).toBe(true);
+    expect(store.setRepresentation.mock.calls[0][1].metadata.get(CONTENT_TYPE)?.value).toBe('text/turtle');
   });
 });

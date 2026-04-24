@@ -1,7 +1,8 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^8.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/uma-css/^0.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/uma-css/^0.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/derived-resources-component/^1.0.0/components/context.jsonld"
   ],
   "import": [
     "css:config/app/init/initialize-intro.json",
@@ -36,11 +37,28 @@
     "css:config/util/resource-locker/memory.json",
     "css:config/util/variables/default.json",
 
-    "uma-css:config/uma/default.json"
+    "uma-css:config/uma/default.json",
+    "derived:config/derived.json"
   ],
   "@graph": [
     {
       "comment": "A single-pod server that trusts a pre-configured UMA AS."
+    },
+    {
+      "@type": "Override",
+      "overrideInstance": {
+        "@id": "urn:solid-server:default:WebhookSubscriber"
+      },
+      "overrideParameters": {
+        "@type": "NotificationSubscriber",
+        "credentialsExtractor": {
+          "@type": "PublicCredentialsExtractor"
+        },
+        "permissionReader": {
+          "@type": "AllStaticReader",
+          "allow": true
+        }
+      }
     }
   ]
 }

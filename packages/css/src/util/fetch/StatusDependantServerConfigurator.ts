@@ -19,7 +19,15 @@ export class StatusDependantServerConfigurator<T> extends ServerConfigurator {
     for (const event of Object.keys(this.statusMap)) {
       server.on(event, async () => {
         for (const dep of this.dependants) {
-          dep.changeStatus(this.statusMap[event])
+          try {
+            await dep.changeStatus(this.statusMap[event]);
+          } catch (error: unknown) {
+            this.logger.error(
+              `Failed to propagate server status "${event}" to ${dep.constructor.name}: ${
+                (error as Error).message
+              }`,
+            );
+          }
         }
       });
     }

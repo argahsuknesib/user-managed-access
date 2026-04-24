@@ -1,10 +1,11 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^8.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/uma-css/^0.0.0/components/context.jsonld"
   ],
   "import": [
-    "uma-css:config/uma/overrides/account-seeding.json",
     "uma-css:config/uma/overrides/account-store.json",
+    "uma-css:config/uma/overrides/account-seeding.json",
     "uma-css:config/uma/overrides/authorization-handler.json",
     "uma-css:config/uma/overrides/authorizer.json",
     "uma-css:config/uma/overrides/jwks.json",

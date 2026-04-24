@@ -57,14 +57,15 @@
     "build": "yarn build:ts && yarn build:components",
     "build:ts": "yarn run -T tsc",
     "build:components": "yarn run -T componentsjs-generator -r uma-css -s src/ -c dist/components -i .componentsignore --lenient",
-    "start:unseeded": "yarn run community-solid-server -m . -c ./config/default.json",
-    "start": "yarn run community-solid-server -m . -c ./config/default.json ./config/init-pat.json  --seedConfig ./config/seed.json",
+    "start:unseeded": "yarn run community-solid-server -m . -c ./config/default.json --workers 1",
+    "start": "yarn run community-solid-server -m . -c ./config/default.json ./config/init-pat.json --seedConfig ./config/seed.json --workers 1",
     "demo": "yarn run demo:setup && yarn run demo:start",
     "demo:setup": "yarn run -T shx rm -rf ./tmp && yarn run -T shx cp -R ../../demo/data ./tmp",
-    "demo:start": "yarn run community-solid-server -m . -c ./config/demo.json ./config/init-pat.json -f ./tmp"
+    "demo:start": "yarn run community-solid-server -m . -c ./config/demo.json ./config/init-pat.json -f ./tmp --workers 1"
   },
   "dependencies": {
-    "@solid/community-server": "^8.0.0-alpha.1",
+    "@solid/community-server": "^8.0.0-alpha.3",
+    "@solidlab/derived-resources-component": "file:../../../derived-resources-component",
     "@solidlab/policy-engine": "^0.0.2",
     "@solidlab/uma": "workspace:^",
     "@types/n3": "^1.16.4",

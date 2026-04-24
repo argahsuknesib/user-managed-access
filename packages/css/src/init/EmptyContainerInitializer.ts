@@ -33,6 +33,7 @@ export class EmptyContainerInitializer extends Initializer {
       return;
     }
     this.logger.info(`Initializing container ${this.containerId.path}`);
-    await this.store.setRepresentation(this.containerId, new BasicRepresentation());
+    // Explicitly store Turtle so GET/Accept negotiation does not fall back to internal/quads.
+    await this.store.setRepresentation(this.containerId, new BasicRepresentation('', 'text/turtle'));
   }
 }

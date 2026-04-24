@@ -1,7 +1,6 @@
-import { Store, DataFactory } from "n3";
-import { ODRL } from 'odrl-evaluator';
-import {queryEngine} from './index';
-import { BadRequestHttpError, ForbiddenHttpError, RDF, XSD } from "@solid/community-server";
+import { ForbiddenHttpError } from "@solid/community-server";
+import { DataFactory, Store } from "n3";
+import { queryEngine } from './index';
 const {literal, namedNode} = DataFactory
 /**
  * Run a query against the store and extract exactly one matching subgraph.
@@ -65,12 +64,12 @@ const buildPolicyCreationQuery = (resourceOwner: string) => `
         {
             ?p a odrl:Agreement ;
                odrl:permission ?r ;
-               odrl:uid ?p .
+               odrl:uid ?uid .
             ?r odrl:assignee ?assignee .
         } UNION {
             ?p a odrl:Set ;
                odrl:permission ?r ;
-               odrl:uid ?p .
+               odrl:uid ?uid .
         }
 
         ?r a odrl:Permission ;

@@ -12,6 +12,20 @@ import { MODES } from '../util/Vocabularies';
 export class UmaPermissionReader extends PermissionReader {
   protected readonly logger = getLoggerFor(this);
 
+  private createLoggedPermissionSet(resourceId: string, permissionSet: PermissionMap): PermissionMap {
+    return new Proxy(permissionSet, {
+      get: (target, property: string | symbol, receiver): unknown => {
+        const value = Reflect.get(target, property, receiver);
+        if (typeof property === 'string') {
+          this.logger.info(
+            `[UMA_PERMISSION_MODE_CHECK] resource_id=${resourceId} mode=${property} value=${JSON.stringify(value)}`,
+          );
+        }
+        return value;
+      },
+    }) as PermissionMap;
+  }
+
   /**
      * Converts ticket to PermissionMap
      * @param {PermissionReaderInput} input
@@ -20,6 +34,14 @@ export class UmaPermissionReader extends PermissionReader {
   public async handle(input: PermissionReaderInput): Promise<MultiPermissionMap> {
     const now = Date.now() / 1000;
     const result = new IdentifierMap<PermissionMap>();
+    const originalGet = result.get.bind(result);
+    result.get = (identifier): PermissionMap | undefined => {
+      const permissionMap = originalGet(identifier);
+      this.logger.info(
+        `[UMA_PERMISSION_LOOKUP] identifier.path=${identifier.path} permissionMap=${JSON.stringify(permissionMap ?? null)}`,
+      );
+      return permissionMap;
+    };
     if (!input.credentials.uma || !(input.credentials.uma as { rpt: UmaClaims }).rpt) {
       return result;
     }
@@ -38,7 +60,7 @@ export class UmaPermissionReader extends PermissionReader {
     }
 
     for (const { resource_id, resource_scopes, iat: p_iat, exp: p_exp, nbf: p_nbf } of permissions ?? []) {
-      const permissionSet = Object.fromEntries(resource_scopes.map(scope => {
+      const permissionSet = this.createLoggedPermissionSet(resource_id, Object.fromEntries(resource_scopes.map(scope => {
         if (!scope.startsWith(MODES.namespace)) {
           this.logger.error(`Received unknown scope ${scope}`);
           return [];
@@ -54,9 +76,30 @@ export class UmaPermissionReader extends PermissionReader {
           return [toCssMode(scope as VocabularyValue<typeof MODES>), false];
         }
         return [toCssMode(scope as VocabularyValue<typeof MODES>), true];
-      }));
+      })));
 
       result.set({ path: resource_id }, permissionSet);
+
+      // CSS identifier normalization can differ across call sites (absolute URL, pathname, trailing slash).
+      // Store equivalent aliases so PermissionBasedAuthorizer can match the same logical resource.
+      const aliases = new Set<string>([ resource_id ]);
+      if (resource_id.endsWith('/')) {
+        aliases.add(resource_id.slice(0, -1));
+      }
+      try {
+        const pathname = new URL(resource_id).pathname;
+        aliases.add(pathname);
+        if (pathname.endsWith('/')) {
+          aliases.add(pathname.slice(0, -1));
+        }
+      } catch {
+        // Not an absolute URL; aliases already include the original identifier forms.
+      }
+
+      for (const alias of aliases) {
+        result.set({ path: alias }, permissionSet);
+        this.logger.info(`[UMA_PERMISSION_INSERT] insertedKey=${alias} sourceResourceId=${resource_id}`);
+      }
     }
     return result;
   }

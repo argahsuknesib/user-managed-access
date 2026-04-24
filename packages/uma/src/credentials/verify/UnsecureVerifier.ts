@@ -23,7 +23,9 @@ export class UnsecureVerifier implements Verifier {
       throw new Error(`Token format ${credential.format} does not match this processor's format.`);
     }
 
-    const raw = credential.token.split(':');
+    // A raw WebID URL (e.g., http://...) contains ':' in its scheme/host.
+    // Only split on ':' when using the encoded `webid:clientid` token form.
+    const raw = credential.token.includes('://') ? [ credential.token ] : credential.token.split(':');
 
     if (raw.length > 2) {
       throw new Error('Invalid token format, only one \':\' is expected.');

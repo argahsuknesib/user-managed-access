@@ -53,11 +53,19 @@ export class PatSeedRegistrar extends StaticHandler implements StatusDependant<b
         this.logger.warn(`Multiple defined WebIDs for ${accountId}, only using ${accountMap[accountId]}`);
         continue;
       }
-      if (await this.accountStore.getSetting(accountId, ACCOUNT_SETTINGS_AS_TOKEN)) {
+      let existingToken: string | undefined;
+      let issuer: string | undefined;
+      try {
+        existingToken = await this.accountStore.getSetting(accountId, ACCOUNT_SETTINGS_AS_TOKEN);
+        issuer = await this.accountStore.getSetting(accountId, ACCOUNT_SETTINGS_AUTHZ_SERVER);
+      } catch (error: unknown) {
+        this.logger.warn(`Unable to read UMA account settings for ${accountId}: ${(error as Error).message}`);
+        continue;
+      }
+      if (existingToken) {
         this.logger.debug(`Account ${accountId} with WebID ${webId} already has PAT client credentials`);
         continue;
       }
-      const issuer = await this.accountStore.getSetting(accountId, ACCOUNT_SETTINGS_AUTHZ_SERVER);
       if (!issuer) {
         this.logger.warn(`No issuer defined for account ${accountId} with WebID ${webId}`);
         continue;

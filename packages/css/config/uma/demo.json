@@ -10,7 +10,7 @@
       "@id": "urn:solid-server:uma:PolicyContainerInitializer",
       "@type": "EmptyContainerInitializer",
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/settings/policies/",
+      "container": "/ruben/settings/policies/",
       "store": { "@id": "urn:solid-server:default:ResourceStore" }
     },
 
@@ -29,7 +29,7 @@
       "@type": "PathBasedReader",
       "paths": [
         {
-          "PathBasedReader:_paths_key": "^/settings/policies/",
+          "PathBasedReader:_paths_key": "^/ruben/settings/policies/",
           "PathBasedReader:_paths_value": {
             "@type": "AllStaticReader",
             "allow": true

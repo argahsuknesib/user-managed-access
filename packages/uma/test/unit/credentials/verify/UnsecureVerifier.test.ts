@@ -23,6 +23,16 @@ describe('UnsecureVerifier', (): void => {
     });
   });
 
+  it('parses a raw WebID URL token from form-urlencoded requests.', async(): Promise<void> => {
+    await expect(verifier.verify({
+      format: 'urn:solidlab:uma:claims:formats:webid',
+      token: 'http://localhost:3000/bob/profile/card#me',
+    })).resolves.toEqual({
+      ['urn:solidlab:uma:claims:types:webid']: 'http://localhost:3000/bob/profile/card#me',
+      ['urn:solidlab:uma:claims:types:clientid']: false,
+    });
+  });
+
   it('parses the second part of the token as client ID if there is one.', async(): Promise<void> => {
     await expect(verifier.verify({
       format: 'urn:solidlab:uma:claims:formats:webid',

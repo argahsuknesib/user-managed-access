@@ -32,6 +32,18 @@
             "NamespacedAuthorizer:_authorizers_value": {
               "@id": "urn:uma:default:AllAuthorizer"
             }
+          },
+          {
+            "NamespacedAuthorizer:_authorizers_key": "ruben",
+            "NamespacedAuthorizer:_authorizers_value": {
+              "@id": "urn:uma:default:AllAuthorizer"
+            }
+          },
+          {
+            "NamespacedAuthorizer:_authorizers_key": "private",
+            "NamespacedAuthorizer:_authorizers_value": {
+              "@id": "urn:uma:default:AllAuthorizer"
+            }
           }
         ],
         "registrationStore": { "@id": "urn:uma:default:ResourceRegistrationStore" }
@@ -44,10 +56,8 @@
         "@id": "urn:uma:default:RulesStorage"
       },
       "overrideParameters": {
-        "@type": "ContainerUCRulesStorage",
-        "containerURL": {
-          "@id": "urn:uma:variables:policyContainer"
-        }
+        "@type": "FileBackupUCRulesStorage",
+        "filePath": { "@id": "urn:uma:variables:backupFilePath" }
       }
     },
     {

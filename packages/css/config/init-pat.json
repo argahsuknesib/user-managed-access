@@ -9,6 +9,55 @@
       "comment": "Automatically registers a PAT for every account on server start"
     },
     {
+      "comment": "Allow unauthenticated read access to Alice's profile card.",
+      "@id": "urn:solid-server:default:PathBasedReader",
+      "@type": "PathBasedReader",
+      "paths": [
+        {
+          "PathBasedReader:_paths_key": "^/alice/profile/card$",
+          "PathBasedReader:_paths_value": {
+            "@type": "AllStaticReader",
+            "allow": true
+          }
+        },
+        {
+          "PathBasedReader:_paths_key": "^/\\.notifications(/.*)?$",
+          "PathBasedReader:_paths_value": {
+            "@type": "AllStaticReader",
+            "allow": true
+          }
+        },
+        {
+          "PathBasedReader:_paths_key": "^/\\.notifications/WebhookChannel2023(/.*)?$",
+          "PathBasedReader:_paths_value": {
+            "@type": "AllStaticReader",
+            "allow": true
+          }
+        },
+        {
+          "PathBasedReader:_paths_key": "^/alice/derived(/.*)?$",
+          "PathBasedReader:_paths_value": {
+            "@type": "AllStaticReader",
+            "allow": false
+          }
+        },
+        {
+          "PathBasedReader:_paths_key": "^/alice/derived/anomaly-alert(/.*)?$",
+          "PathBasedReader:_paths_value": {
+            "@type": "AllStaticReader",
+            "allow": false
+          }
+        },
+        {
+          "PathBasedReader:_paths_key": "^/alice/acc-x(/.*)?$",
+          "PathBasedReader:_paths_value": {
+            "@type": "AllStaticReader",
+            "allow": false
+          }
+        }
+      ]
+    },
+    {
       "@id": "urn:solid-server:default:PatSeedRegistrar",
       "@type": "PatSeedRegistrar",
       "accountStorage": { "@id": "urn:solid-server:default:AccountStorage" },
@@ -17,16 +66,26 @@
       "patUpdater": { "@id": "urn:solid-server:default:PatUpdater" }
     },
     {
-      "comment": "The PatSeedRegistrar is added to the list of Initializers so Components.js finds and instantiate it.",
-      "@id": "urn:solid-server:default:PrimaryParallelInitializer",
-      "@type": "ParallelHandler",
-      "handlers": [{ "@id": "urn:solid-server:default:PatSeedRegistrar" }]
-    },
-    {
+      "comment": "Notify both the UMA fetcher and PAT seeder when the server status changes.",
       "@id": "urn:solid-server:default:StatusDependantServerConfigurator",
       "@type": "StatusDependantServerConfigurator",
       "dependants": [
+        { "@id": "urn:solid-server:default:UmaFetcher" },
         { "@id": "urn:solid-server:default:PatSeedRegistrar" }
+      ],
+      "statusMap": [
+        {
+          "StatusDependantServerConfigurator:_statusMap_key": "listening",
+          "StatusDependantServerConfigurator:_statusMap_value": true
+        },
+        {
+          "StatusDependantServerConfigurator:_statusMap_key": "close",
+          "StatusDependantServerConfigurator:_statusMap_value": false
+        },
+        {
+          "StatusDependantServerConfigurator:_statusMap_key": "error",
+          "StatusDependantServerConfigurator:_statusMap_value": false
+        }
       ]
     }
   ]
