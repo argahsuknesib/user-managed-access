@@ -209,7 +209,7 @@ describe('UmaClient', (): void => {
     it('errors if there was an issue getting the configuration.', async(): Promise<void> => {
       response.status = 400;
       await expect(client.fetchTicket(permissions, issuer, credentials))
-        .rejects.toThrow("Error while retrieving ticket: " +
+        .rejects.toThrow("Error while retrieving ticket for resource(s)=[target1, target2] issuer=issuer: " +
         "Unable to retrieve UMA Configuration for Authorization Server 'issuer'" +
         " from 'issuer/.well-known/uma2-configuration'");
     });

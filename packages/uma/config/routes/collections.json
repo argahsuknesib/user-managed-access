@@ -5,7 +5,7 @@
   "@graph": [
     {
       "@id": "urn:uma:default:CollectionHandler",
-      "@type": "CollectionRequestHandler",
+      "@type": "sai-uma:dist/routes/Collection.jsonld#CollectionRequestHandler",
       "credentialParser": { "@id": "urn:uma:default:CredentialParser" },
       "verifier": { "@id": "urn:uma:default:Verifier" },
       "ownershipStore": { "@id": "urn:uma:default:OwnershipStore" },

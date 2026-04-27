@@ -170,12 +170,14 @@ export class UmaClient implements SingleThreaded {
    * @return {Promise<string>} - the permission ticket
    */
   public async fetchTicket(permissions: AccessMap, issuer: string, credentials: string): Promise<string | undefined> {
+    const targetPaths = Array.from(permissions.keys()).map((id) => id.path).join(', ');
     let endpoint: string;
 
     try {
       endpoint = (await this.fetchUmaConfig(issuer)).permission_endpoint;
     } catch (e: any) {
-      throw new Error(`Error while retrieving ticket: ${(e as Error).message}`);
+      const message = e instanceof Error ? (e.message || e.name || 'Unknown error') : String(e);
+      throw new Error(`Error while retrieving ticket for resource(s)=[${targetPaths}] issuer=${issuer}: ${message}`);
     }
 
     const body = [];
@@ -198,12 +200,19 @@ export class UmaClient implements SingleThreaded {
           await this.registerResource(target, issuer, credentials);
           umaId = await this.umaIdStore.get(target.path);
         } else {
-          throw new NotFoundHttpError();
+          throw new NotFoundHttpError(
+            `Resource not found and not registered with UMA AS: ${target.path}. ` +
+            `If this is a derived resource, re-run script:setup-alice-derived after any CSS/UMA-AS restart.`
+          );
         }
       }
       // If at this point, there is still no registered ID, there is probably an issue with the resource.
       if (!umaId) {
-        throw new InternalServerError(`Unable to request ticket: no UMA ID found for ${target.path}`);
+        throw new InternalServerError(
+          `Unable to request ticket: no UMA ID found for ${target.path} even after registration attempt. ` +
+          `This may indicate a stale MemoryMapStorage state from a CSS/UMA-AS restart. ` +
+          `Re-run script:setup-alice-derived to restore resource registrations.`
+        );
       }
       body.push({
         resource_id: umaId,

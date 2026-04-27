@@ -1,48 +1,87 @@
-@prefix ex: <http://example.org/>.
+@prefix ex: <http://example.org/> .
 @prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 
-ex:usagePolicy1 a odrl:Agreement .
-ex:usagePolicy1 odrl:uid ex:usagePolicy1 .
-ex:usagePolicy1 odrl:permission ex:permission1 .
-ex:permission1 a odrl:Permission .
-ex:permission1 odrl:action odrl:modify .
-ex:permission1 odrl:target <alice/other/resource.txt> .
-ex:permission1 odrl:assignee <https://woslabbi.pod.knows.idlab.ugent.be/profile/card#me> .
-ex:permission1 odrl:assigner <https://pod.woutslabbinck.com/profile/card#me> .
+ex:spo2Policy a odrl:Agreement ;
+  odrl:uid ex:spo2Policy ;
+  odrl:permission
+    ex:aliceCreateSpo2ContainerAlice,
+    ex:aliceCreateSpo2ContainerBob,
+    ex:spo2ReadAlice,
+    ex:spo2ReadBob,
+    ex:spo2CreateAlice,
+    ex:spo2CreateBob,
+    ex:spo2AppendAlice,
+    ex:spo2AppendBob,
+    ex:webhookChannelReadBob,
+    ex:webhookChannelAppendBob,
+    ex:webhookChannelCreateBob .
 
-ex:usagePolicy1a a odrl:Agreement .
-ex:usagePolicy1a odrl:uid ex:usagePolicy1a .
-ex:usagePolicy1a odrl:permission ex:permission1a .
-ex:permission1a a odrl:Permission .
-ex:permission1a odrl:action odrl:create .
-ex:permission1a odrl:target <alice/other/resource.txt> .
-ex:permission1a odrl:assignee <https://woslabbi.pod.knows.idlab.ugent.be/profile/card#me> .
-ex:permission1a odrl:assigner <https://pod.woutslabbinck.com/profile/card#me> .
+# Container creation is authorized on /alice/ because creating /alice/spo2/
+# is evaluated by UMA as "create in parent container".
+ex:aliceCreateSpo2ContainerAlice a odrl:Permission ;
+  odrl:action odrl:create ;
+  odrl:target <http://localhost:3000/alice/> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:usagePolicy2 a odrl:Agreement .
-ex:usagePolicy2 odrl:uid ex:usagePolicy2 .
-ex:usagePolicy2 odrl:permission ex:permission2a .
-ex:permission2 a odrl:Permission .
-ex:permission2 odrl:action odrl:modify .
-ex:permission2 odrl:target <alice/other/> .
-ex:permission2 odrl:assignee <https://woslabbi.pod.knows.idlab.ugent.be/profile/card#me> .
-ex:permission2 odrl:assigner <https://pod.woutslabbinck.com/profile/card#me> .
+ex:aliceCreateSpo2ContainerBob a odrl:Permission ;
+  odrl:action odrl:create ;
+  odrl:target <http://localhost:3000/alice/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:usagePolicy2a a odrl:Agreement .
-ex:usagePolicy2a odrl:uid ex:usagePolicy2a .
-ex:usagePolicy2a odrl:permission ex:permission2 .
-ex:permission2a a odrl:Permission .
-ex:permission2a odrl:action odrl:create .
-ex:permission2a odrl:target <alice/>, <alice/other/> .
-ex:permission2a odrl:assignee <https://woslabbi.pod.knows.idlab.ugent.be/profile/card#me> .
-ex:permission2a odrl:assigner <https://pod.woutslabbinck.com/profile/card#me> .
+ex:spo2CreateAlice a odrl:Permission ;
+  odrl:action odrl:create ;
+  odrl:target <http://localhost:3000/alice/spo2/> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
+ex:spo2CreateBob a odrl:Permission ;
+  odrl:action odrl:create ;
+  odrl:target <http://localhost:3000/alice/spo2/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:usagePolicy3 a odrl:Agreement .
-ex:usagePolicy3 odrl:uid ex:usagePolicy3 .
-ex:usagePolicy3 odrl:permission ex:permission3 .
-ex:permission3 a odrl:Permission .
-ex:permission3 odrl:action odrl:read .
-ex:permission3 odrl:target <alice/other/resource.txt> .
-ex:permission3 odrl:assignee <https://woslabbi.pod.knows.idlab.ugent.be/profile/card#me> .
-ex:permission3 odrl:assigner <https://pod.woutslabbinck.com/profile/card#me> .
+ex:spo2AppendAlice a odrl:Permission ;
+  odrl:action odrl:append ;
+  odrl:target <http://localhost:3000/alice/spo2/> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:spo2AppendBob a odrl:Permission ;
+  odrl:action odrl:append ;
+  odrl:target <http://localhost:3000/alice/spo2/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:spo2ReadAlice a odrl:Permission ;
+  odrl:action odrl:read ;
+  odrl:target <http://localhost:3000/alice/spo2/> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:spo2ReadBob a odrl:Permission ;
+  odrl:action odrl:read ;
+  odrl:target <http://localhost:3000/alice/spo2/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+# PANDA uses Bob's WebID claim by default (see PANDA/src/config/UmaClaim.ts).
+# These permissions allow PANDA to register webhook subscriptions.
+ex:webhookChannelReadBob a odrl:Permission ;
+  odrl:action odrl:read ;
+  odrl:target <http://localhost:3000/.notifications/WebhookChannel2023/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:webhookChannelAppendBob a odrl:Permission ;
+  odrl:action odrl:append ;
+  odrl:target <http://localhost:3000/.notifications/WebhookChannel2023/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:webhookChannelCreateBob a odrl:Permission ;
+  odrl:action odrl:create ;
+  odrl:target <http://localhost:3000/.notifications/WebhookChannel2023/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .

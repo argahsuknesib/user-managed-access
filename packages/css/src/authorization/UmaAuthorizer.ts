@@ -4,7 +4,8 @@ import {
   createErrorMessage,
   ForbiddenHttpError,
   InternalServerError,
-  UnauthorizedHttpError
+  UnauthorizedHttpError,
+  NotFoundHttpError
 } from '@solid/community-server';
 import { getLoggerFor } from 'global-logger-factory';
 import { DataFactory } from 'n3';
@@ -14,6 +15,23 @@ import { OwnerUtil } from '../util/OwnerUtil';
 const { namedNode, literal } = DataFactory;
 
 export const WWW_AUTH = namedNode('urn:css:http:headers:www-authenticate');
+
+function describeError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message || error.name || error.stack || 'Unknown error';
+  }
+
+  const message = createErrorMessage(error as Error);
+  return message || 'Unknown error';
+}
+
+function isLikelyPatFailure(message: string): boolean {
+  return /Unable to generate PAT|PAT registration failed|token_endpoint|client_credentials/i.test(message);
+}
+
+function isLikelyRegistrationFailure(message: string): boolean {
+  return /no UMA ID found|stale MemoryMapStorage|not registered with UMA AS|re-run script:setup-alice-derived/i.test(message);
+}
 
 /**
  * Authorizer that bases its decision on that of another Authorizer.
@@ -72,12 +90,29 @@ export class UmaAuthorizer extends Authorizer {
 
     if (!issuer || !credentials) throw new InternalServerError(`Credentials and/or issuer are not set for ${owner}.`);
 
+    const targetPaths = Array.from(requestedModes.keys()).map((id) => id.path).join(', ');
+
     try {
       const ticket = await this.umaClient.fetchTicket(requestedModes, issuer, credentials);
       return ticket ? `UMA realm="solid", as_uri="${issuer}", ticket="${ticket}"` : undefined;
     } catch (e) {
-      this.logger.error(`Error while requesting UMA header: ${(e as Error).message}`);
-      throw new InternalServerError(`Error while requesting UMA header: ${(e as Error).message}.`);
+      if (NotFoundHttpError.isInstance(e)) {
+        throw e;
+      }
+
+      const causeMessage = describeError(e).trim();
+      const patAcquisitionFailed = isLikelyPatFailure(causeMessage);
+      const registrationMissing = isLikelyRegistrationFailure(causeMessage);
+      const contextMessage = [
+        `resource(s)=[${targetPaths}]`,
+        `issuer=${issuer}`,
+        `patAcquisitionFailed=${patAcquisitionFailed}`,
+        `resourceRegistrationMissing=${registrationMissing}`,
+        `cause=${causeMessage}`,
+      ].join(' | ');
+
+      this.logger.error(`Error while requesting UMA header: ${contextMessage}`);
+      throw new InternalServerError(`Error while requesting UMA header: ${contextMessage}`);
     }
   }
 }

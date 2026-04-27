@@ -9,6 +9,30 @@
       "comment": "Automatically registers a PAT for every account on server start"
     },
     {
+      "@id": "urn:uma:default:UnionPermissionReader",
+      "@type": "Override",
+      "overrideInstance": { "@id": "urn:uma:default:UnionPermissionReader" },
+      "overrideParameters": {
+        "@type": "UnionPermissionReader",
+        "readers": [
+          {
+            "PathBasedReader:_paths_key": "^/alice/profile/card$",
+            "PathBasedReader:_paths_value": {
+              "@type": "AllStaticReader",
+              "allow": true
+            }
+          },
+          {
+            "PathBasedReader:_paths_key": "^/alice/acc-x(/.*)?$",
+            "PathBasedReader:_paths_value": {
+              "@type": "AllStaticReader",
+              "allow": false
+            }
+          }
+        ]
+      }
+    },
+    {
       "@id": "urn:solid-server:default:PatSeedRegistrar",
       "@type": "PatSeedRegistrar",
       "accountStorage": { "@id": "urn:solid-server:default:AccountStorage" },

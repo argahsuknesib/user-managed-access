@@ -32,39 +32,22 @@ async function deleteForOneClient(id: string) {
 
 
 async function main() {
-    let started: 'NO' | 'SEED' | 'DELETE' = 'NO';
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-    console.log("Do you want to seed or delete? (type 'seed' or 'delete')");
-    rl.on('line', async (input) => {
-        if (started === 'NO') {
-            if (input === "seed") {
-                started = 'SEED';
-                console.log("Type the webID that you wish to seed, or cancel:");
-            }
-            else if (input === "delete") {
-                console.log("Type the webID of the client who's seeded data you want to delete, or cancel:")
-                started = 'DELETE';
-            }
-            else
-                console.log("Type 'seed' or 'delete'")
-        } else {
-            if (input === 'cancel')
-                started = 'NO';
-            else if (started === 'SEED') {
-                await seedForOneClient(input);
-                console.log('seeding completed')
-            } else {
-                await deleteForOneClient(input);
-                console.log('deleting complete')
-            }
-            console.log("Do you want to seed or delete? (type 'seed' or 'delete')");
-            started = 'NO';
-        }
-
-    });
+    // If an argument is provided, use it as the webID, otherwise use alice's default
+    const webId = process.argv[2] || 'http://localhost:3000/alice/profile/card#me';
+    const mode = process.argv[3] || 'seed';
+    
+    if (mode === 'seed') {
+        console.log(`Automatically seeding for ${webId}...`);
+        await seedForOneClient(webId);
+        console.log('Seeding completed');
+    } else if (mode === 'delete') {
+        console.log(`Automatically deleting for ${webId}...`);
+        await deleteForOneClient(webId);
+        console.log('Deleting completed');
+    } else {
+        console.error('Invalid mode. Use "seed" or "delete".');
+        process.exit(1);
+    }
 }
 
 main();

@@ -111,10 +111,10 @@ describe('UmaAuthorizer', (): void => {
   it('throws an error if there was an issue fetching the ticket.', async(): Promise<void> => {
     source.handleSafe.mockRejectedValueOnce(new ForbiddenHttpError());
     ownerUtil.findCommonOwner.mockResolvedValueOnce('owner');
-    client.fetchTicket.mockRejectedValueOnce(new Error('bad data'));
+    client.fetchTicket.mockRejectedValueOnce(new Error(''));
     const requestedModes: AccessMap = new IdentifierSetMultiMap<string>([[ { path: 'id' }, PERMISSIONS.Read ]]);
 
     await expect(authorizer.handle({ requestedModes } as any)).rejects
-      .toThrow(`Error while requesting UMA header: bad data.`);
+      .toThrow(`Error while requesting UMA header: resource(s)=[id] | issuer=issuer | patAcquisitionFailed=false | resourceRegistrationMissing=false | cause=Error`);
   });
 });
