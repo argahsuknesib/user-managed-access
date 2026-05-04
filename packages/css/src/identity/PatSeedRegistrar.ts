@@ -6,6 +6,7 @@ import {
 } from '@solid/community-server';
 import { StaticHandler } from 'asynchronous-handlers';
 import { getLoggerFor } from 'global-logger-factory';
+import { createErrorMessage } from '@solid/community-server';
 import { UmaClient } from '../uma/UmaClient';
 import type { StatusDependant } from '../util/fetch/StatusDependant';
 import {
@@ -53,20 +54,29 @@ export class PatSeedRegistrar extends StaticHandler implements StatusDependant<b
         this.logger.warn(`Multiple defined WebIDs for ${accountId}, only using ${accountMap[accountId]}`);
         continue;
       }
-      if (await this.accountStore.getSetting(accountId, ACCOUNT_SETTINGS_AS_TOKEN)) {
-        this.logger.debug(`Account ${accountId} with WebID ${webId} already has PAT client credentials`);
-        continue;
-      }
       const issuer = await this.accountStore.getSetting(accountId, ACCOUNT_SETTINGS_AUTHZ_SERVER);
       if (!issuer) {
         this.logger.warn(`No issuer defined for account ${accountId} with WebID ${webId}`);
         continue;
       }
+      const existingCredentials = await this.accountStore.getSetting(accountId, ACCOUNT_SETTINGS_AS_TOKEN);
+      if (existingCredentials) {
+        try {
+          await this.umaClient.getPat(issuer, existingCredentials);
+          this.logger.debug(`Account ${accountId} with WebID ${webId} already has valid PAT client credentials`);
+          continue;
+        } catch {
+          this.logger.warn(`Existing PAT credentials for WebID ${webId} are invalid, generating new credentials`);
+        }
+      }
       accountMap[accountId] = webId;
-      const { id, secret } = await this.umaClient.generateClientCredentials(webId, issuer);
-      this.logger.info(`Generated client credentials for WebID ${webId}`);
-
-      await this.patUpdater.updateSettings(accountId, id, secret, issuer);
+      try {
+        const { id, secret } = await this.umaClient.generateClientCredentials(webId, issuer);
+        this.logger.info(`Generated client credentials for WebID ${webId}`);
+        await this.patUpdater.updateSettings(accountId, id, secret, issuer);
+      } catch (error: unknown) {
+        this.logger.error(`Unable to register PAT credentials for WebID ${webId}: ${createErrorMessage(error)}`);
+      }
     }
   }
 }

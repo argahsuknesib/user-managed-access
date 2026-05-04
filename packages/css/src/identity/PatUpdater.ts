@@ -57,7 +57,12 @@ export class PatUpdater {
     const identifier = { path: resource };
     if (previous) {
       // Removing the previous registration
-      await this.umaClient.deleteResource(identifier, previous.issuer, previous.pat);
+      try {
+        await this.umaClient.deleteResource(identifier, previous.issuer, previous.pat);
+      } catch (error: unknown) {
+        this.logger.warn(`Unable to remove previous UMA registration for ${resource}, continuing: ${
+          createErrorMessage(error)}`);
+      }
     }
     await this.umaClient.registerResource(identifier, issuer, credentials);
     if (isContainerIdentifier(identifier)) {

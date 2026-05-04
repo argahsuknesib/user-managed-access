@@ -103,12 +103,21 @@ export class OdrlAuthorizer implements Authorizer {
                         {
                             action: action,
                             resource: resource_id,
-                            requestingParty: subject
+                            requestingParty: subject,
+                            owner: subject,
                         }
                     ]
                 }
                 const request = basicPolicy(requestPolicy);
                 const requestStore = request.representation
+                const matchingPolicyRules = policyStore.getSubjects(ODRL.terms.target, namedNode(resource_id), null)
+                  .filter((rule) =>
+                    policyStore.countQuads(rule, ODRL.terms.action, namedNode(action), null) > 0 &&
+                    policyStore.countQuads(rule, ODRL.terms.assignee, namedNode(subject), null) > 0
+                  );
+                const targetRules = policyStore.getSubjects(ODRL.terms.target, namedNode(resource_id), null);
+                this.logger.info(`Rules targeting ${resource_id}: ${targetRules.length}`);
+                this.logger.info(`Matching policy rules for ${subject} ${resource_id} ${action}: ${matchingPolicyRules.length}`);
                 // Adding context triples for the client identifier, if there is one
                 if (clientQuads.length > 0) {
                     requestStore.addQuad(quad(
@@ -134,6 +143,7 @@ export class OdrlAuthorizer implements Authorizer {
                     policies: [...policyStore],
                     reports: reports
                 })
+                this.logger.info(`ODRL decision for ${subject} ${resource_id} ${scope}: ${allowed}`);
 
                 if (allowed) {
                     grantedPermissions[resource_id].push(scope);

@@ -64,7 +64,8 @@
     "demo:start": "yarn run community-solid-server -m . -c ./config/demo.json ./config/init-pat.json -f ./tmp"
   },
   "dependencies": {
-    "@solid/community-server": "^8.0.0-alpha.1",
+    "@solid/community-server": "^8.0.0-alpha.3",
+    "@solidlab/derived-resources-component": "file:../../../derived-resources-component",
     "@solidlab/policy-engine": "^0.0.2",
     "@solidlab/uma": "workspace:^",
     "@types/n3": "^1.16.4",

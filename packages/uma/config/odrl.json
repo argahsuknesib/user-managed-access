@@ -1,11 +1,31 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/uma/^0.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solidlab/uma/^0.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/asynchronous-handlers/^1.0.0/components/context.jsonld"
   ],
   "import": [
     "sai-uma:config/default.json"
   ],
   "@graph": [
+    {
+      "@id": "urn:uma:odrl:RulesStorage",
+      "@type": "Override",
+      "overrideInstance": { "@id": "urn:uma:default:RulesStorage" },
+      "overrideParameters": {
+        "@type": "DirectoryUCRulesStorage",
+        "directoryPath": { "@id": "urn:uma:variables:policyDir" },
+        "baseIRI": { "@id": "urn:uma:variables:policyBaseIRI" }
+      }
+    },
+    {
+      "comment": "Disable RulesStorage initializable hook: DirectoryUCRulesStorage is not Initializable.",
+      "@id": "urn:uma:odrl:RulesStorageInitializableHandler",
+      "@type": "Override",
+      "overrideInstance": { "@id": "urn:uma:default:RulesStorageInitializableHandler" },
+      "overrideParameters": {
+        "@type": "StaticHandler"
+      }
+    },
     {
       "@id": "urn:uma:demo:Authorizer",
       "@type": "Override",
