@@ -143,6 +143,29 @@ describe('UmaClient', (): void => {
         text: vi.fn().mockResolvedValueOnce('bad data'),
       });
       await expect(client.getPat(issuer, credentials)).rejects.toThrow(InternalServerError);
+      expect((client as PublicUmaClient).inProgress.has('PAT_EVENT')).toBe(false);
+    });
+
+    it('clears the PAT in-progress lock after a failed request.', async(): Promise<void> => {
+      fetcher.fetch.mockResolvedValueOnce({
+        ...response,
+        status: 400,
+        text: vi.fn().mockResolvedValueOnce('bad data'),
+      });
+
+      const publicClient = new PublicUmaClient(umaIdStore, fetcher, identifierStrategy, resourceSet, baseUrl);
+      publicClient.fetchUmaConfig = vi.fn().mockResolvedValue(umaConfig);
+
+      await expect(publicClient.getPat(issuer, credentials)).rejects.toThrow(InternalServerError);
+      expect(publicClient.inProgress.has('PAT_EVENT')).toBe(false);
+
+      fetcher.fetch.mockResolvedValueOnce({
+        ...response,
+        status: 201,
+        json: vi.fn().mockResolvedValueOnce({ access_token: 'pat_token', token_type: 'Bearer', expires_in: 3600 }),
+      });
+
+      await expect(publicClient.getPat(issuer, credentials)).resolves.toEqual('Bearer pat_token');
     });
   });
 
@@ -328,6 +351,32 @@ describe('UmaClient', (): void => {
           { resource_id: 'uma2', resource_scopes: [`urn:example:css:modes:write`] }
         ]),
       });
+    });
+
+    it('tries to register a virtual resource if its parent exists.', async(): Promise<void> => {
+      const registerClient = new SimpleRegistrationUmaClient(
+        umaIdStore, fetcher, identifierStrategy, resourceSet, 'http://localhost:3000/');
+      identifierStrategy.isRootContainer.mockImplementation((id) => id.path === 'http://localhost:3000/');
+      identifierStrategy.getParentContainer.mockImplementation((id) => {
+        const url = new URL(id.path);
+        const path = url.pathname.endsWith('/') ? url.pathname.slice(0, -1) : url.pathname;
+        const parent = path.slice(0, path.lastIndexOf('/') + 1) || '/';
+        url.pathname = parent;
+        return { path: url.href };
+      });
+      umaIdStore.get.mockResolvedValueOnce(undefined);
+      resourceSet.hasResource.mockResolvedValueOnce(false);
+      resourceSet.hasResource.mockResolvedValueOnce(true);
+      umaIdStore.get.mockResolvedValueOnce('uma-latest');
+      umaIdStore.get.mockResolvedValueOnce('uma2');
+
+      await expect(registerClient.fetchTicket(new IdentifierSetMultiMap<string>([
+        [ { path: 'http://localhost:3000/alice/derived/latest' }, PERMISSIONS.Read ],
+        [ { path: 'target2' }, PERMISSIONS.Modify ],
+      ]), issuer, credentials)).resolves.toBeUndefined();
+
+      expect(registerClient.registerResource).toHaveBeenCalledWith(
+        { path: 'http://localhost:3000/alice/derived/latest' }, issuer, credentials);
     });
 
     it('errors if there is still no UMA ID after registering the resource.', async(): Promise<void> => {
@@ -560,6 +609,42 @@ describe('UmaClient', (): void => {
       });
     });
 
+    it('normalizes absolute URLs before registering.', async(): Promise<void> => {
+      const absoluteClient = new UmaClient(umaIdStore, fetcher, identifierStrategy, resourceSet, 'http://localhost:3000/');
+      absoluteClient['fetchUmaConfig'] = vi.fn().mockResolvedValue(umaConfig);
+      absoluteClient['getPat'] = vi.fn().mockResolvedValue('Bearer pat_token');
+      identifierStrategy.isRootContainer.mockImplementation((id) => id.path === 'http://localhost:3000/');
+      identifierStrategy.getParentContainer.mockImplementation((id) => {
+        const url = new URL(id.path);
+        url.pathname = '/';
+        return { path: url.href };
+      });
+      umaIdStore.get.mockImplementation(async(id) => id === 'http://localhost:3000/' ? 'parentId' : undefined);
+      const resp = { ...response, status: 201, json: vi.fn().mockResolvedValueOnce({ _id: umaId }) };
+      fetcher.fetch.mockResolvedValueOnce(resp);
+
+      await expect(absoluteClient.registerResource(
+        { path: 'http://localhost:3000/alice/../alice/' }, issuer, credentials)).resolves.toBeUndefined();
+
+      expect(umaIdStore.get).toHaveBeenCalledWith('http://localhost:3000/alice/');
+      expect(umaIdStore.get).toHaveBeenCalledWith('http://localhost:3000/');
+      expect(umaIdStore.set).toHaveBeenCalledWith('http://localhost:3000/alice/', umaId);
+      expect(fetcher.fetch).toHaveBeenCalledWith(umaConfig.resource_registration_endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer pat_token',
+        },
+        body: JSON.stringify({
+          name: 'http://localhost:3000/alice/',
+          resource_scopes,
+          resource_defaults,
+          resource_relations: { '@reverse': { 'http://www.w3.org/ns/ldp#contains': [ 'parentId' ] }},
+        }),
+      });
+    });
+
     it('updates the relations later if the parent is not registered.', async(): Promise<void> => {
       const umaIds: Record<string, string> = {};
       umaIdStore.get.mockImplementation(async(id) => umaIds[id]);
@@ -630,6 +715,22 @@ describe('UmaClient', (): void => {
       await expect(client.deleteResource({ path: '/foo' }, issuer, credentials)).resolves.toBeUndefined();
       expect(fetcher.fetch).toHaveBeenCalledTimes(3);
       expect(fetcher.fetch).nthCalledWith(3, umaConfig.resource_registration_endpoint + 'umaId', {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer pat_token' },
+      });
+    });
+
+    it('normalizes absolute URLs before deleting.', async(): Promise<void> => {
+      const absoluteClient = new UmaClient(umaIdStore, fetcher, identifierStrategy, resourceSet, 'http://localhost:3000/');
+      absoluteClient['fetchUmaConfig'] = vi.fn().mockResolvedValue(umaConfig);
+      absoluteClient['getPat'] = vi.fn().mockResolvedValue('Bearer pat_token');
+      umaIdStore.get.mockResolvedValueOnce('umaId');
+
+      await expect(absoluteClient.deleteResource(
+        { path: 'http://localhost:3000/alice/../alice/' }, issuer, credentials)).resolves.toBeUndefined();
+
+      expect(umaIdStore.get).toHaveBeenCalledWith('http://localhost:3000/alice/');
+      expect(fetcher.fetch).toHaveBeenCalledWith(umaConfig.resource_registration_endpoint + 'umaId', {
         method: 'DELETE',
         headers: { 'Authorization': 'Bearer pat_token' },
       });

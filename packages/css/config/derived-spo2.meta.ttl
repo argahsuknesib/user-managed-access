@@ -1,6 +1,6 @@
 @prefix derived: <urn:npm:solid:derived-resources:> .
 
-<http://localhost:3000/alice/derived/> derived:derivedResource [
+<> derived:derivedResource [
   derived:template "latest";
   derived:selector "http://localhost:3000/alice/spo2/*";
   derived:filter "latest"

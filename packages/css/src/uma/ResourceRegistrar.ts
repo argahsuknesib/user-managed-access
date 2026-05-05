@@ -30,9 +30,17 @@ export class ResourceRegistrar extends StaticHandler {
           return;
         const { issuer, credentials } = await this.findUmaSettings(owner);
         this.umaClient.registerResource(resource, issuer, credentials).catch((err: Error) => {
+          if (this.isDeferredRegistrationError(err)) {
+            this.logger.warn(`Deferring UMA registration for ${resource.path}: ${createErrorMessage(err)}`);
+            return;
+          }
           this.logger.error(`Unable to register resource ${resource.path}: ${createErrorMessage(err)}`);
         });
       } catch (err) {
+        if (this.isMissingUmaSettingsError(err)) {
+          this.logger.debug(`Skipping UMA registration until account settings exist: ${createErrorMessage(err)}`);
+          return;
+        }
         this.logger.error(`Unable to find UMA settings: ${createErrorMessage(err)}`);
       }
     });
@@ -76,5 +84,13 @@ export class ResourceRegistrar extends StaticHandler {
     }
 
     return { credentials, issuer };
+  }
+
+  protected isMissingUmaSettingsError(error: unknown): boolean {
+    return createErrorMessage(error).startsWith('Credentials and/or issuer are not set for ');
+  }
+
+  protected isDeferredRegistrationError(error: unknown): boolean {
+    return createErrorMessage(error).startsWith('Unable to generate PAT: 403 - ');
   }
 }

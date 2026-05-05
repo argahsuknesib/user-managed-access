@@ -50,12 +50,31 @@ export class ParentCreateExtractor extends ModesExtractor {
   }
 
   protected async findFirstExistingParent(id: ResourceIdentifier): Promise<ResourceIdentifier> {
-    if (await this.resourceSet.hasResource(id)) {
-      return id;
+    const normalizedId = normalizeIdentifier(id);
+    if (await this.resourceSet.hasResource(normalizedId)) {
+      return normalizedId;
     }
-    if (this.identifierStrategy.isRootContainer(id)) {
-      throw new InternalServerError(`Root container ${id.path} does not exist`);
+    if (this.identifierStrategy.isRootContainer(normalizedId)) {
+      throw new InternalServerError(`Root container ${normalizedId.path} does not exist`);
     }
-    return this.findFirstExistingParent(this.identifierStrategy.getParentContainer(id));
+    return this.findFirstExistingParent(normalizeIdentifier(this.identifierStrategy.getParentContainer(normalizedId)));
   }
+}
+
+function normalizeIdentifier(id: ResourceIdentifier): ResourceIdentifier {
+  const url = new URL(id.path);
+  const normalizedSegments: string[] = [];
+  for (const segment of url.pathname.split('/')) {
+    const decoded = decodeURIComponent(segment);
+    if (!decoded || decoded === '.') {
+      continue;
+    }
+    if (decoded === '..') {
+      normalizedSegments.pop();
+      continue;
+    }
+    normalizedSegments.push(segment);
+  }
+  url.pathname = `/${normalizedSegments.join('/')}${url.pathname.endsWith('/') ? '/' : ''}`;
+  return { ...id, path: url.href };
 }

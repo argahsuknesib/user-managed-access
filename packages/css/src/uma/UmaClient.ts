@@ -117,30 +117,31 @@ export class UmaClient implements SingleThreaded {
       return this.getPat(issuer, credentials);
     }
     this.inProgress.add(PAT_EVENT);
+    try {
+      const config = await this.fetchUmaConfig(issuer);
+      const response = await this.fetcher.fetch(config.token_endpoint, {
+        method: 'POST',
+        headers: {
+          authorization: credentials,
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+        body: 'grant_type=client_credentials&scope=uma_protection',
+      });
+      if (response.status !== 201) {
+        throw new InternalServerError(`Unable to generate PAT: ${response.status} - ${await response.text()}`);
+      }
 
-    const config = await this.fetchUmaConfig(issuer);
-    const response = await this.fetcher.fetch(config.token_endpoint, {
-      method: 'POST',
-      headers: {
-        authorization: credentials,
-        'content-type': 'application/x-www-form-urlencoded',
-      },
-      body: 'grant_type=client_credentials&scope=uma_protection',
-    });
-    if (response.status !== 201) {
-      throw new InternalServerError(`Unable to generate PAT: ${response.status} - ${await response.text()}`);
+      const { access_token, token_type, expires_in } = await response.json() as TokenResponse;
+      this.logger.info(`Generated PAT ${access_token}`);
+      const pat = `${token_type} ${access_token}`;
+      const expiration = Date.now() + expires_in * 1000;
+      this.patStorage[credentials] = { pat, expiration };
+
+      return pat;
+    } finally {
+      this.inProgress.delete(PAT_EVENT);
+      this.emitter.emit(PAT_EVENT);
     }
-
-    const { access_token, token_type, expires_in } = await response.json() as TokenResponse;
-    this.logger.info(`Generated PAT ${access_token}`);
-    const pat = `${token_type} ${access_token}`;
-    const expiration = Date.now() + expires_in * 1000;
-    this.patStorage[credentials] = { pat, expiration };
-
-    this.inProgress.delete(PAT_EVENT);
-    this.emitter.emit(PAT_EVENT);
-
-    return pat;
   }
 
   public async generateClientCredentials(webId: string, issuer: string): Promise<{ id: string, secret: string }> {
@@ -180,30 +181,34 @@ export class UmaClient implements SingleThreaded {
 
     const body = [];
     for (const [ target, modes ] of permissions.entrySets()) {
-      let umaId = await this.umaIdStore.get(target.path);
-      if (!umaId && this.inProgress.has(target.path)) {
+      const normalizedTarget = normalizeIdentifier(target);
+      let umaId = await this.umaIdStore.get(normalizedTarget.path);
+      if (!umaId && this.inProgress.has(normalizedTarget.path)) {
         // Wait for the resource to finish registration if it is still being registered, and there is no UMA ID yet.
         // Time out after 2s to prevent getting stuck in case something goes wrong during registration.
         const timeoutPromise = promises.setTimeout(2000, '').then(() => {
-          throw new InternalServerError(`Unable to finish registration for ${target.path}.`)
+          throw new InternalServerError(`Unable to finish registration for ${normalizedTarget.path}.`)
         });
-        await Promise.race([timeoutPromise, once(this.emitter, target.path)]);
-        umaId = await this.umaIdStore.get(target.path);
+        await Promise.race([timeoutPromise, once(this.emitter, normalizedTarget.path)]);
+        umaId = await this.umaIdStore.get(normalizedTarget.path);
       }
       if (!umaId) {
         // Somehow, this resource was not registered yet while it does exist.
         // This can be a consequence of adding resources in the wrong way (e.g., copying files),
         // or other special resources, such as derived resources.
-        if (await this.resourceSet.hasResource(target)) {
-          await this.registerResource(target, issuer, credentials);
-          umaId = await this.umaIdStore.get(target.path);
+        const targetExists = await this.resourceSet.hasResource(normalizedTarget);
+        const parentExists = !this.identifierStrategy.isRootContainer(normalizedTarget) &&
+          await this.resourceSet.hasResource(normalizeIdentifier(this.identifierStrategy.getParentContainer(normalizedTarget)));
+        if (targetExists || parentExists) {
+          await this.registerResource(normalizedTarget, issuer, credentials);
+          umaId = await this.umaIdStore.get(normalizedTarget.path);
         } else {
           throw new NotFoundHttpError();
         }
       }
       // If at this point, there is still no registered ID, there is probably an issue with the resource.
       if (!umaId) {
-        throw new InternalServerError(`Unable to request ticket: no UMA ID found for ${target.path}`);
+        throw new InternalServerError(`Unable to request ticket: no UMA ID found for ${normalizedTarget.path}`);
       }
       body.push({
         resource_id: umaId,
@@ -361,6 +366,7 @@ export class UmaClient implements SingleThreaded {
    * and updated with the relations once the parent registration is finished.
    */
   public async registerResource(resource: ResourceIdentifier, issuer: string, credentials: string): Promise<void> {
+    resource = normalizeIdentifier(resource);
     if (this.inProgress.has(resource.path)) {
       // It is possible a resource is still being registered when an updated registration is already requested.
       // To prevent duplicate registrations of the same resource,
@@ -396,7 +402,7 @@ export class UmaClient implements SingleThreaded {
     // These will be stored in this array so they can be executed simultaneously.
     const promises: Promise<void>[] = [];
     if (!this.identifierStrategy.isRootContainer(resource)) {
-      const parentIdentifier = this.identifierStrategy.getParentContainer(resource);
+      const parentIdentifier = normalizeIdentifier(this.identifierStrategy.getParentContainer(resource));
       const parentId = await this.umaIdStore.get(parentIdentifier.path);
       if (parentId) {
         description.resource_relations = { '@reverse': { 'http://www.w3.org/ns/ldp#contains': [ parentId ] } };
@@ -430,29 +436,32 @@ export class UmaClient implements SingleThreaded {
       body: JSON.stringify(description),
     };
 
-    const fetchPromise = this.fetcher.fetch(endpoint, request).then(async resp => {
-      if (knownUmaId) {
-        if (resp.status !== 200) {
-          throw new InternalServerError(`Resource update request failed. ${await resp.text()}`);
-        }
-      } else {
-        if (resp.status !== 201) {
-          throw new InternalServerError(`Resource registration request failed. ${await resp.text()}`);
-        }
+    const fetchPromise = this.fetcher.fetch(endpoint, request)
+      .then(async resp => {
+        if (knownUmaId) {
+          if (resp.status !== 200) {
+            throw new InternalServerError(`Resource update request failed. ${await resp.text()}`);
+          }
+        } else {
+          if (resp.status !== 201) {
+            throw new InternalServerError(`Resource registration request failed. ${await resp.text()}`);
+          }
 
-        const { _id: umaId } = await resp.json() as { _id: string };
+          const { _id: umaId } = await resp.json() as { _id: string };
 
-        if (!isString(umaId)) {
-          throw new InternalServerError('Unexpected response from UMA server; no UMA id received.');
+          if (!isString(umaId)) {
+            throw new InternalServerError('Unexpected response from UMA server; no UMA id received.');
+          }
+
+          await this.umaIdStore.set(resource.path, umaId);
+          this.logger.info(`Registered resource ${resource.path} with UMA ID ${umaId}`);
         }
-
-        await this.umaIdStore.set(resource.path, umaId);
-        this.logger.info(`Registered resource ${resource.path} with UMA ID ${umaId}`);
-      }
-      // Indicate this resource finished registration
-      this.inProgress.delete(resource.path);
-      this.emitter.emit(resource.path);
-    });
+      })
+      .finally(() => {
+      // Always unblock waiters, even if this attempt fails.
+        this.inProgress.delete(resource.path);
+        this.emitter.emit(resource.path);
+      });
 
     // Execute all the required promises.
     promises.push(fetchPromise);
@@ -463,6 +472,7 @@ export class UmaClient implements SingleThreaded {
    * Deletes the UMA registration for the given resource from the given issuer.
    */
   public async deleteResource(resource: ResourceIdentifier, issuer: string, credentials: string): Promise<void> {
+    resource = normalizeIdentifier(resource);
     const { resource_registration_endpoint: endpoint } = await this.fetchUmaConfig(issuer);
 
     const umaId = await this.umaIdStore.get(resource.path);
@@ -480,4 +490,22 @@ export class UmaClient implements SingleThreaded {
 
 function isString(value: any): value is string {
   return typeof value === 'string' || value instanceof String;
+}
+
+function normalizeIdentifier(id: ResourceIdentifier): ResourceIdentifier {
+  const url = new URL(id.path);
+  const normalizedSegments: string[] = [];
+  for (const segment of url.pathname.split('/')) {
+    const decoded = decodeURIComponent(segment);
+    if (!decoded || decoded === '.') {
+      continue;
+    }
+    if (decoded === '..') {
+      normalizedSegments.pop();
+      continue;
+    }
+    normalizedSegments.push(segment);
+  }
+  url.pathname = `/${normalizedSegments.join('/')}${url.pathname.endsWith('/') ? '/' : ''}`;
+  return { ...id, path: url.href };
 }

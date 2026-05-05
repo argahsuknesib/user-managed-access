@@ -112,4 +112,27 @@ describe('PatUpdater', (): void => {
     expect(umaClient.deleteResource).toHaveBeenCalledWith({ path: '/foo/baz' }, 'oldIssuer', 'oldToken');
     expect(umaClient.deleteResource).toHaveBeenCalledWith({ path: '/bar' }, 'oldIssuer', 'oldToken');
   });
+
+  it('resolves relative container members against the current container.', async(): Promise<void> => {
+    podStore.findPods.mockResolvedValue([{ baseUrl: 'http://localhost:3000/alice/' }]);
+    resourceStore.getRepresentation.mockImplementation((id: ResourceIdentifier) => {
+      if (id.path === 'http://localhost:3000/alice/') {
+        return new BasicRepresentation('', new RepresentationMetadata({
+          [LDP.contains]: [ 'profile/', 'README' ],
+        }));
+      }
+      return new BasicRepresentation();
+    });
+
+    await expect(updater.updateSettings(accountId, id, secret, issuer)).resolves.toBeUndefined();
+    await flushPromises();
+
+    const authString = `${encodeURIComponent(id)}:${encodeURIComponent(secret)}`;
+    const credentials = `Basic ${Buffer.from(authString).toString('base64')}`;
+    expect(umaClient.registerResource).toHaveBeenCalledWith({ path: 'http://localhost:3000/alice/' }, issuer, credentials);
+    expect(umaClient.registerResource).toHaveBeenCalledWith(
+      { path: 'http://localhost:3000/alice/profile/' }, issuer, credentials);
+    expect(umaClient.registerResource).toHaveBeenCalledWith(
+      { path: 'http://localhost:3000/alice/README' }, issuer, credentials);
+  });
 });

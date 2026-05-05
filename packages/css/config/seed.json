@@ -8,8 +8,7 @@
       }
     ],
     "authz": {
-      "server": "http://localhost:4000/uma",
-      "credentials": "Basic ZmE2MTVkMTAtMGQ2Ni00ODJhLWI2Y2UtNTQ4YjliNzRhNDdmOmZhZmFlNGIxNWUyMDExODk3ZmM2MWMzZjE4MWZkMTU2YzE1NjIxMTZjNTM0NWIyNzEyNjhhNGZlYzI3NjMxZDM2NTQxYWFiZDU4OTgzMmUxZjMwNDZiNGJlNGJhMzZhMDczNWY1NDQ0NjBhMTc5ZDI2MjFjNDk5YTJmZmY4MmM="
+      "server": "http://localhost:4000/uma"
     }
   },
   {

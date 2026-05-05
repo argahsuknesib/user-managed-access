@@ -68,7 +68,8 @@ export class PatUpdater {
     if (isContainerIdentifier(identifier)) {
       const representation = await this.resourceStore.getRepresentation(identifier, {});
       representation.data.destroy();
-      const members = representation.metadata.getAll(LDP.terms.contains).map((term): string => term.value);
+      const members = representation.metadata.getAll(LDP.terms.contains).map((term): string =>
+        new URL(term.value, identifier.path).href);
       await Promise.all(
         members.map((member): Promise<void> => this.updateRecursive(member, issuer, credentials, previous))
       );
