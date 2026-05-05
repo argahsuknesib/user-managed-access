@@ -1,14 +1,14 @@
 import {
-  AccessMap,
-  IdentifierStrategy,
-  InternalServerError,
-  isContainerIdentifier,
-  joinUrl,
-  KeyValueStorage,
-  NotFoundHttpError,
-  ResourceIdentifier,
-  ResourceSet,
-  SingleThreaded
+    AccessMap,
+    IdentifierStrategy,
+    InternalServerError,
+    isContainerIdentifier,
+    joinUrl,
+    KeyValueStorage,
+    NotFoundHttpError,
+    ResourceIdentifier,
+    ResourceSet,
+    SingleThreaded
 } from '@solid/community-server';
 import { PERMISSIONS } from '@solidlab/policy-engine';
 import type { ResourceDescription } from '@solidlab/uma';
