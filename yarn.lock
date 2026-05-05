@@ -10032,7 +10032,7 @@ __metadata:
 
 "@solidlab/derived-resources-component@file:../../../derived-resources-component::locator=%40solidlab%2Fuma-css%40workspace%3Apackages%2Fcss":
   version: 1.2.0
-  resolution: "@solidlab/derived-resources-component@file:../../../derived-resources-component#../../../derived-resources-component::hash=c466eb&locator=%40solidlab%2Fuma-css%40workspace%3Apackages%2Fcss"
+  resolution: "@solidlab/derived-resources-component@file:../../../derived-resources-component#../../../derived-resources-component::hash=29d5db&locator=%40solidlab%2Fuma-css%40workspace%3Apackages%2Fcss"
   dependencies:
     "@comunica/query-sparql": "npm:^5.2.0"
     "@rdfjs/types": "npm:^1.1.0"
@@ -10049,7 +10049,7 @@ __metadata:
     rdf-vocabulary: "npm:^1.0.1"
     sparqljs: "npm:^3.7.1"
     uri-template-lite: "npm:^23.4.0"
-  checksum: 10c0/e1392399b6d166344e4ea520debcb084787ec9b540e7d26e99605f1a33042a711c13a576b3980ad3b9686dc1c40aadb19bd8ffa64d118a156dfc082dfc3d4191
+  checksum: 10c0/031e9bf53e3002cadb90a0dec14a388799874d15adc189be0ff3eb5c4eceadfc2ab6a843a5ce5b52c368d7d6dea0a6a3f0f2f81e5b5d43a3f513e8ea63f6159b
   languageName: node
   linkType: hard
 

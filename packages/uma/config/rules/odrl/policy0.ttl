@@ -6,46 +6,24 @@ ex:spo2Policy a odrl:Agreement ;
   odrl:permission
     ex:aliceCreateSpo2ContainerAlice,
     ex:aliceCreateSpo2ContainerBob,
-    ex:spo2ReadAlice,
-    ex:spo2ReadBob,
-    ex:spo2ReadPanda,
-    ex:spo2ReadReplayer,
-    ex:spo2CreatePanda,
-    ex:spo2CreateReplayer,
-    ex:spo2AppendPanda,
-    ex:spo2AppendReplayer,
-    ex:spo2CreateAlice,
-    ex:spo2CreateBob,
-    ex:spo2WriteAlice,
-    ex:spo2AppendAlice,
-    ex:spo2AppendBob,
-    ex:derivedSpo2ReadAlice,
-    ex:derivedSpo2ReadBob,
-    ex:derivedSpo2ReadPanda,
-    ex:derivedSpo2ReadReplayer,
-    ex:derivedSpo2CreateAlice,
-    ex:derivedSpo2CreateBob,
-    ex:derivedSpo2CreatePanda,
-    ex:derivedSpo2AppendAlice,
-    ex:derivedSpo2AppendBob,
-    ex:derivedSpo2AppendPanda,
-    ex:spo2DerivedReadAlice,
-    ex:spo2DerivedReadBob,
-    ex:spo2DerivedAppendAlice,
-    ex:spo2DerivedAppendBob,
+    ex:spo2AliceAccess,
+    ex:spo2BobAccess,
+    ex:spo2PandaAccess,
+    ex:spo2ReplayerAccess,
+    ex:derivedSpo2AliceAccess,
+    ex:derivedSpo2BobAccess,
+    ex:derivedSpo2PandaAccess,
+    ex:derivedSpo2ReplayerAccess,
+    ex:spo2DerivedAliceAccess,
+    ex:spo2DerivedBobAccess,
     ex:aliceDerivedLatestReadAlice,
     ex:aliceDerivedLatestReadBob,
-    ex:aliceDerivedContainerReadAlice,
-    ex:aliceDerivedContainerReadBob,
-    ex:aliceDerivedContainerAppendAlice,
-    ex:aliceDerivedContainerWriteAlice,
-    ex:derivedContainerReadAlice,
-    ex:derivedContainerReadBob,
-    ex:derivedContainerAppendAlice,
-    ex:derivedContainerAppendBob,
-    ex:webhookChannelReadBob,
-    ex:webhookChannelAppendBob,
-    ex:webhookChannelCreateBob .
+    ex:aliceDerivedContainerAliceAccess,
+    ex:aliceDerivedContainerBobAccess,
+    ex:aliceDerivedContainerMetaAliceAccess,
+    ex:derivedContainerAliceAccess,
+    ex:derivedContainerBobAccess,
+    ex:webhookChannelBobAccess .
 
 # Container creation is authorized on /alice/ because creating /alice/spo2/
 # is evaluated by UMA as "create in parent container".
@@ -61,164 +39,62 @@ ex:aliceCreateSpo2ContainerBob a odrl:Permission ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:spo2CreateAlice a odrl:Permission ;
-  odrl:action odrl:create ;
+ex:spo2AliceAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append, odrl:write ;
   odrl:target <http://localhost:3000/alice/spo2/> ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:spo2CreateBob a odrl:Permission ;
-  odrl:action odrl:create ;
+ex:spo2BobAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/spo2/> ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:spo2WriteAlice a odrl:Permission ;
-  odrl:action odrl:write ;
-  odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2AppendAlice a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2AppendBob a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2ReadAlice a odrl:Permission ;
-  odrl:action odrl:read ;
-  odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2ReadBob a odrl:Permission ;
-  odrl:action odrl:read ;
-  odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2ReadPanda a odrl:Permission ;
-  odrl:action odrl:read ;
+ex:spo2PandaAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/spo2/> ;
   odrl:assignee <http://localhost:8080/panda#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:spo2CreatePanda a odrl:Permission ;
-  odrl:action odrl:create ;
-  odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee <http://localhost:8080/panda#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2AppendPanda a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee <http://localhost:8080/panda#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2ReadReplayer a odrl:Permission ;
-  odrl:action odrl:read ;
+ex:spo2ReplayerAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/spo2/> ;
   odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:spo2CreateReplayer a odrl:Permission ;
-  odrl:action odrl:create ;
-  odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2AppendReplayer a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:derivedSpo2CreateAlice a odrl:Permission ;
-  odrl:action odrl:create ;
+ex:derivedSpo2AliceAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/derived/spo2/> ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:derivedSpo2CreateBob a odrl:Permission ;
-  odrl:action odrl:create ;
+ex:derivedSpo2BobAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/derived/spo2/> ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:derivedSpo2AppendAlice a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/alice/derived/spo2/> ;
-  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:derivedSpo2AppendBob a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/alice/derived/spo2/> ;
-  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:derivedSpo2AppendPanda a odrl:Permission ;
-  odrl:action odrl:append ;
+ex:derivedSpo2PandaAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/derived/spo2/> ;
   odrl:assignee <http://localhost:8080/panda#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:derivedSpo2ReadAlice a odrl:Permission ;
-  odrl:action odrl:read ;
-  odrl:target <http://localhost:3000/alice/derived/spo2/> ;
-  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:derivedSpo2ReadBob a odrl:Permission ;
-  odrl:action odrl:read ;
-  odrl:target <http://localhost:3000/alice/derived/spo2/> ;
-  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:derivedSpo2ReadPanda a odrl:Permission ;
-  odrl:action odrl:read ;
-  odrl:target <http://localhost:3000/alice/derived/spo2/> ;
-  odrl:assignee <http://localhost:8080/panda#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:derivedSpo2ReadReplayer a odrl:Permission ;
+ex:derivedSpo2ReplayerAccess a odrl:Permission ;
   odrl:action odrl:read ;
   odrl:target <http://localhost:3000/alice/derived/spo2/> ;
   odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:derivedSpo2CreatePanda a odrl:Permission ;
-  odrl:action odrl:create ;
-  odrl:target <http://localhost:3000/alice/derived/spo2/> ;
-  odrl:assignee <http://localhost:8080/panda#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2DerivedReadAlice a odrl:Permission ;
-  odrl:action odrl:read ;
+ex:spo2DerivedAliceAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/spo2/derived> ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:spo2DerivedReadBob a odrl:Permission ;
-  odrl:action odrl:read ;
-  odrl:target <http://localhost:3000/alice/spo2/derived> ;
-  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2DerivedAppendAlice a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/alice/spo2/derived> ;
-  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:spo2DerivedAppendBob a odrl:Permission ;
-  odrl:action odrl:append ;
+ex:spo2DerivedBobAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/spo2/derived> ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
@@ -235,70 +111,40 @@ ex:aliceDerivedLatestReadBob a odrl:Permission ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:aliceDerivedContainerReadAlice a odrl:Permission ;
-  odrl:action odrl:read ;
+ex:aliceDerivedContainerAliceAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append, odrl:write ;
   odrl:target <http://localhost:3000/alice/derived/> ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:aliceDerivedContainerReadBob a odrl:Permission ;
+ex:aliceDerivedContainerBobAccess a odrl:Permission ;
   odrl:action odrl:read ;
   odrl:target <http://localhost:3000/alice/derived/> ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:aliceDerivedContainerAppendAlice a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/alice/derived/> ;
+ex:aliceDerivedContainerMetaAliceAccess a odrl:Permission ;
+  odrl:action odrl:append, odrl:write ;
+  odrl:target <http://localhost:3000/alice/derived/.meta> ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:aliceDerivedContainerWriteAlice a odrl:Permission ;
-  odrl:action odrl:write ;
-  odrl:target <http://localhost:3000/alice/derived/> ;
-  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:derivedContainerReadAlice a odrl:Permission ;
-  odrl:action odrl:read ;
+ex:derivedContainerAliceAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/derived> ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:derivedContainerReadBob a odrl:Permission ;
-  odrl:action odrl:read ;
+ex:derivedContainerBobAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/derived> ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:derivedContainerAppendAlice a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/derived> ;
-  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:derivedContainerAppendBob a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/derived> ;
-  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-# PANDA uses Bob's WebID claim by default (see PANDA/src/config/UmaClaim.ts).
+# PANDA uses Bob's WebID claim by default.
 # These permissions allow PANDA to register webhook subscriptions.
-ex:webhookChannelReadBob a odrl:Permission ;
-  odrl:action odrl:read ;
-  odrl:target <http://localhost:3000/.notifications/WebhookChannel2023/> ;
-  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:webhookChannelAppendBob a odrl:Permission ;
-  odrl:action odrl:append ;
-  odrl:target <http://localhost:3000/.notifications/WebhookChannel2023/> ;
-  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
-
-ex:webhookChannelCreateBob a odrl:Permission ;
-  odrl:action odrl:create ;
+ex:webhookChannelBobAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append, odrl:create ;
   odrl:target <http://localhost:3000/.notifications/WebhookChannel2023/> ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
