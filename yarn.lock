@@ -6839,7 +6839,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@comunica/bus-dereference@npm:^4.0.1, @comunica/bus-dereference@npm:^4.4.1":
+"@comunica/bus-dereference@npm:4.4.1, @comunica/bus-dereference@npm:^4.0.1, @comunica/bus-dereference@npm:^4.4.1":
   version: 4.4.1
   resolution: "@comunica/bus-dereference@npm:4.4.1"
   dependencies:
@@ -6853,7 +6853,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@comunica/bus-dereference@npm:^5.0.0, @comunica/bus-dereference@npm:^5.2.2":
+"@comunica/bus-dereference@npm:^5.0.0, @comunica/bus-dereference@npm:^5.2.0, @comunica/bus-dereference@npm:^5.2.2":
   version: 5.2.2
   resolution: "@comunica/bus-dereference@npm:5.2.2"
   dependencies:
@@ -6981,6 +6981,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@comunica/bus-http@npm:4.4.0, @comunica/bus-http@npm:^4.0.1, @comunica/bus-http@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "@comunica/bus-http@npm:4.4.0"
+  dependencies:
+    "@comunica/core": "npm:^4.4.0"
+    "@jeswr/stream-to-string": "npm:^2.0.0"
+    is-stream: "npm:^2.0.1"
+    readable-from-web: "npm:^1.0.0"
+    readable-stream-node-to-web: "npm:^1.0.1"
+  checksum: 10c0/4368a96da1b98d70ba032b541c833f608520c133952a4e78025e985941996e68aa36806c0eabfc80c19d143022886defc6fa220252d058283cc2bab05c6a9216
+  languageName: node
+  linkType: hard
+
 "@comunica/bus-http@npm:^2.0.1, @comunica/bus-http@npm:^2.10.2":
   version: 2.10.2
   resolution: "@comunica/bus-http@npm:2.10.2"
@@ -6994,20 +7007,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@comunica/bus-http@npm:^4.0.1, @comunica/bus-http@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "@comunica/bus-http@npm:4.4.0"
-  dependencies:
-    "@comunica/core": "npm:^4.4.0"
-    "@jeswr/stream-to-string": "npm:^2.0.0"
-    is-stream: "npm:^2.0.1"
-    readable-from-web: "npm:^1.0.0"
-    readable-stream-node-to-web: "npm:^1.0.1"
-  checksum: 10c0/4368a96da1b98d70ba032b541c833f608520c133952a4e78025e985941996e68aa36806c0eabfc80c19d143022886defc6fa220252d058283cc2bab05c6a9216
-  languageName: node
-  linkType: hard
-
-"@comunica/bus-http@npm:^5.0.0, @comunica/bus-http@npm:^5.2.2":
+"@comunica/bus-http@npm:^5.0.0, @comunica/bus-http@npm:^5.2.0, @comunica/bus-http@npm:^5.2.2":
   version: 5.2.2
   resolution: "@comunica/bus-http@npm:5.2.2"
   dependencies:
@@ -7422,7 +7422,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@comunica/bus-rdf-parse-html@npm:^5.0.0, @comunica/bus-rdf-parse-html@npm:^5.2.2":
+"@comunica/bus-rdf-parse-html@npm:^5.0.0, @comunica/bus-rdf-parse-html@npm:^5.2.0, @comunica/bus-rdf-parse-html@npm:^5.2.2":
   version: 5.2.2
   resolution: "@comunica/bus-rdf-parse-html@npm:5.2.2"
   dependencies:
@@ -7664,6 +7664,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@comunica/core@npm:4.4.0, @comunica/core@npm:^4.0.1, @comunica/core@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "@comunica/core@npm:4.4.0"
+  dependencies:
+    "@comunica/types": "npm:^4.4.0"
+    immutable: "npm:^5.1.3"
+  checksum: 10c0/d96bcaa7240d921a501a0c7b7acd9aa888453f4d3bdc262379453fa720947109ec0251f114cf3c68bb106a2217f77204a2109d00a5e5c9dde3c4f7754bdd7c07
+  languageName: node
+  linkType: hard
+
 "@comunica/core@npm:^2.0.1, @comunica/core@npm:^2.10.0":
   version: 2.10.0
   resolution: "@comunica/core@npm:2.10.0"
@@ -7674,17 +7684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@comunica/core@npm:^4.0.1, @comunica/core@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "@comunica/core@npm:4.4.0"
-  dependencies:
-    "@comunica/types": "npm:^4.4.0"
-    immutable: "npm:^5.1.3"
-  checksum: 10c0/d96bcaa7240d921a501a0c7b7acd9aa888453f4d3bdc262379453fa720947109ec0251f114cf3c68bb106a2217f77204a2109d00a5e5c9dde3c4f7754bdd7c07
-  languageName: node
-  linkType: hard
-
-"@comunica/core@npm:^5.0.0, @comunica/core@npm:^5.1.0, @comunica/core@npm:^5.2.2":
+"@comunica/core@npm:^5.0.0, @comunica/core@npm:^5.1.0, @comunica/core@npm:^5.2.0, @comunica/core@npm:^5.2.2":
   version: 5.2.2
   resolution: "@comunica/core@npm:5.2.2"
   dependencies:
@@ -7954,7 +7954,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@comunica/query-sparql@npm:^4.0.2, @comunica/query-sparql@npm:^4.4.1":
+"@comunica/query-sparql@npm:4.4.1, @comunica/query-sparql@npm:^4.0.2":
   version: 4.4.1
   resolution: "@comunica/query-sparql@npm:4.4.1"
   dependencies:
@@ -8541,19 +8541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@comunica/types@npm:^2.10.0":
-  version: 2.10.0
-  resolution: "@comunica/types@npm:2.10.0"
-  dependencies:
-    "@rdfjs/types": "npm:*"
-    "@types/yargs": "npm:^17.0.24"
-    asynciterator: "npm:^3.8.1"
-    sparqlalgebrajs: "npm:^4.2.0"
-  checksum: 10c0/c322c54f93aa93d2bf3a97458286cd994e7c254b01b700f189f6602b7a20f4436ebc320f1f81519686aae16accf08b687d7b9673fc41932b7ed34c45a243e5c5
-  languageName: node
-  linkType: hard
-
-"@comunica/types@npm:^4.4.0":
+"@comunica/types@npm:4.4.0, @comunica/types@npm:^4.4.0":
   version: 4.4.0
   resolution: "@comunica/types@npm:4.4.0"
   dependencies:
@@ -8563,6 +8551,18 @@ __metadata:
     lru-cache: "npm:^10.0.1"
     sparqlalgebrajs: "npm:^4.3.8"
   checksum: 10c0/529489a08158c70899d6c986dfb75bb32803f6001567b916ac1a07f83564cd96e50d405877d5de038d3c20b77201821e818678648d6f9601804bf2fd52df007d
+  languageName: node
+  linkType: hard
+
+"@comunica/types@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "@comunica/types@npm:2.10.0"
+  dependencies:
+    "@rdfjs/types": "npm:*"
+    "@types/yargs": "npm:^17.0.24"
+    asynciterator: "npm:^3.8.1"
+    sparqlalgebrajs: "npm:^4.2.0"
+  checksum: 10c0/c322c54f93aa93d2bf3a97458286cd994e7c254b01b700f189f6602b7a20f4436ebc320f1f81519686aae16accf08b687d7b9673fc41932b7ed34c45a243e5c5
   languageName: node
   linkType: hard
 
@@ -10032,9 +10032,13 @@ __metadata:
 
 "@solidlab/derived-resources-component@file:../../../derived-resources-component::locator=%40solidlab%2Fuma-css%40workspace%3Apackages%2Fcss":
   version: 1.2.0
-  resolution: "@solidlab/derived-resources-component@file:../../../derived-resources-component#../../../derived-resources-component::hash=29d5db&locator=%40solidlab%2Fuma-css%40workspace%3Apackages%2Fcss"
+  resolution: "@solidlab/derived-resources-component@file:../../../derived-resources-component#../../../derived-resources-component::hash=f27bf1&locator=%40solidlab%2Fuma-css%40workspace%3Apackages%2Fcss"
   dependencies:
+    "@comunica/bus-dereference": "npm:^5.2.0"
+    "@comunica/bus-http": "npm:^5.2.0"
+    "@comunica/core": "npm:^5.2.0"
     "@comunica/query-sparql": "npm:^5.2.0"
+    "@comunica/types": "npm:^5.2.0"
     "@rdfjs/types": "npm:^1.1.0"
     "@solid/community-server": "npm:^8.0.0-alpha.3"
     "@solidlab/policy-engine": "npm:^0.0.2"
@@ -10044,12 +10048,14 @@ __metadata:
     global-logger-factory: "npm:^1.0.0"
     lru-cache: "npm:^10.4.3"
     n3: "npm:^1.17.4"
+    rdf-dereference: "npm:^5.0.0"
+    rdf-parse: "npm:^5.0.0"
     rdf-string: "npm:^1.6.3"
     rdf-validate-shacl: "npm:^0.4.5"
     rdf-vocabulary: "npm:^1.0.1"
     sparqljs: "npm:^3.7.1"
     uri-template-lite: "npm:^23.4.0"
-  checksum: 10c0/031e9bf53e3002cadb90a0dec14a388799874d15adc189be0ff3eb5c4eceadfc2ab6a843a5ce5b52c368d7d6dea0a6a3f0f2f81e5b5d43a3f513e8ea63f6159b
+  checksum: 10c0/9b2f84e7d7729beb79d5f3270969fc8f5d0269c9f3baa8dddcff4bdc12ac5c5b4f1c9570abe1a7e395500e6f04c8d2961369c05b35f395300c6cb702152f1465
   languageName: node
   linkType: hard
 
@@ -10073,6 +10079,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@solidlab/uma-css@workspace:packages/css"
   dependencies:
+    "@comunica/bus-dereference": "npm:^5.2.0"
+    "@comunica/bus-http": "npm:^5.2.0"
+    "@comunica/bus-rdf-parse-html": "npm:^5.2.0"
+    "@comunica/core": "npm:^5.2.0"
+    "@comunica/query-sparql": "npm:^5.2.0"
+    "@comunica/types": "npm:^5.2.0"
     "@solid/community-server": "npm:^8.0.0-alpha.3"
     "@solidlab/derived-resources-component": "file:../../../derived-resources-component"
     "@solidlab/policy-engine": "npm:^0.0.2"
@@ -10085,6 +10097,9 @@ __metadata:
     http-message-signatures: "npm:^1.0.4"
     jose: "npm:^5.2.2"
     n3: "npm:^1.17.2"
+    rdf-dereference: "npm:^5.0.0"
+    rdf-parse: "npm:^5.0.0"
+    rdf-serialize: "npm:^5.1.0"
   languageName: unknown
   linkType: soft
 
@@ -10092,7 +10107,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@solidlab/uma@workspace:packages/uma"
   dependencies:
-    "@comunica/query-sparql": "npm:^4.4.1"
+    "@comunica/bus-dereference": "npm:4.4.1"
+    "@comunica/bus-http": "npm:4.4.0"
+    "@comunica/core": "npm:4.4.0"
+    "@comunica/query-sparql": "npm:4.4.1"
+    "@comunica/types": "npm:4.4.0"
     "@httpland/authorization-parser": "npm:^1.1.0"
     "@solid/access-token-verifier": "npm:^1.2.0"
     "@solid/community-server": "npm:^8.0.0-alpha.1"
@@ -10109,6 +10128,8 @@ __metadata:
     n3: "npm:^1.17.2"
     odrl-evaluator: "npm:^0.6.0"
     policy-conflict-resolver: "npm:^0.0.3"
+    rdf-dereference: "npm:^4.0.0"
+    rdf-parse: "npm:^4.0.0"
     rdf-string: "npm:^2.0.1"
     rdf-vocabulary: "npm:^1.0.1"
     uri-template-lite: "npm:^23.4.0"

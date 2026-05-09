@@ -98,6 +98,39 @@
     "vite": "^6.3.5",
     "vitest": "^3.2.3"
   },
+  "syncpack": {
+    "versionGroups": [
+      {
+        "dependencies": [
+          "@solidlab/uma"
+        ],
+        "isIgnored": true,
+        "label": "Allow workspace protocol for local UMA dependency",
+        "packages": [
+          "@solidlab/uma-css"
+        ]
+      },
+      {
+        "dependencies": [
+          "@solid/community-server",
+          "@comunica/bus-dereference",
+          "@comunica/bus-http",
+          "@comunica/bus-rdf-parse-html",
+          "@comunica/core",
+          "@comunica/query-sparql",
+          "@comunica/types",
+          "rdf-dereference",
+          "rdf-parse"
+        ],
+        "isIgnored": true,
+        "label": "Allow mixed Comunica majors for UMA and CSS workspaces",
+        "packages": [
+          "@solidlab/uma",
+          "@solidlab/uma-css"
+        ]
+      }
+    ]
+  },
   "resolutions": {
     "@types/node": "^20.19.1"
   },

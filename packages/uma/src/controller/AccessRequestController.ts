@@ -35,7 +35,7 @@ export type AccessRequest = Type<typeof Permission>;
 export class AccessRequestController extends BaseController {
     protected readonly logger = getLoggerFor(this);
 
-    protected readonly queryEngine = new QueryEngine();
+    protected readonly queryEngine: QueryEngine = new QueryEngine();
 
     constructor(
         protected readonly store: UCRulesStorage,
