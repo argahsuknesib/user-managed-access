@@ -1,0 +1,33 @@
+PREFIX derived: <urn:npm:solid:derived-resources:>
+
+DELETE DATA {
+<> derived:derivedResource
+    <http://localhost:3000/alice/derived/#latest>,
+    <http://localhost:3000/alice/derived/#latest-anomaly>.
+
+  <http://localhost:3000/alice/derived/#latest>
+    derived:template "derived/latest";
+    derived:selector "http://localhost:3000/alice/spo2/*";
+    derived:filter "latest".
+
+  <http://localhost:3000/alice/derived/#latest-anomaly>
+    derived:template "derived/latest-anomaly";
+    derived:selector "http://localhost:3000/alice/derived/anomaly-alert/*";
+    derived:filter "latest".
+};
+
+INSERT DATA {
+  <> derived:derivedResource
+    <http://localhost:3000/alice/derived/#latest>,
+    <http://localhost:3000/alice/derived/#latest-anomaly>.
+
+  <http://localhost:3000/alice/derived/#latest>
+    derived:template "derived/latest";
+    derived:selector "http://localhost:3000/alice/spo2/*";
+    derived:filter "latest".
+
+  <http://localhost:3000/alice/derived/#latest-anomaly>
+    derived:template "derived/latest-anomaly";
+    derived:selector "http://localhost:3000/alice/derived/anomaly-alert/*";
+    derived:filter "latest".
+}

@@ -1,0 +1,11 @@
+@prefix derived: <urn:npm:solid:derived-resources:> .
+
+<> derived:derivedResource [
+  derived:template "latest";
+  derived:selector "http://localhost:3000/alice/spo2/*";
+  derived:filter "latest"
+], [
+  derived:template "latest-anomaly";
+  derived:selector "http://localhost:3000/alice/derived/anomaly-alert/*";
+  derived:filter "latest"
+].

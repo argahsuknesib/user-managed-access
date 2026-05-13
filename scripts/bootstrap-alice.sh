@@ -1,80 +1,68 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-wait_for_url() {
-  local url="$1"
-  local attempts="${2:-120}"
-  local i
-  for (( i=1; i<=attempts; i++ )); do
-    if curl -sS -o /dev/null "$url"; then
-      return 0
-    fi
-    sleep 1
-  done
-  return 1
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+
+# shellcheck source=./lib/uma.sh
+source "${SCRIPT_DIR}/lib/uma.sh"
+
+BASE_URL="${BASE_URL:-http://localhost:3000}"
+UMA_URL="${UMA_URL:-http://localhost:4000}"
+DERIVED_META_URL="${BASE_URL}/alice/.meta"
+PATCH_FILE="${ROOT_DIR}/packages/css/config/derived-alice.patch.sparql"
+
+ensure_container() {
+  local container_url="$1"
+
+  if uma_get "${container_url}" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  uma_put_empty "${container_url}"
 }
 
-if ! wait_for_url "http://localhost:4000/uma/keys" 120; then
-  echo "UMA did not become ready in time" >&2
-  exit 1
-fi
+verify_metadata() {
+  local meta_output
 
-if ! wait_for_url "http://localhost:3000/" 120; then
-  echo "CSS did not become ready in time" >&2
-  exit 1
-fi
+  meta_output="$(uma_get "${DERIVED_META_URL}")"
 
-sleep 8
+  grep -F '<urn:npm:solid:derived-resources:template> "latest"' <<<"${meta_output}" >/dev/null
+  grep -F '<urn:npm:solid:derived-resources:selector> "http://localhost:3000/alice/spo2/*"' <<<"${meta_output}" >/dev/null
+  grep -F '<urn:npm:solid:derived-resources:template> "latest-anomaly"' <<<"${meta_output}" >/dev/null
+  grep -F '<urn:npm:solid:derived-resources:selector> "http://localhost:3000/alice/derived/anomaly-alert/*"' \
+    <<<"${meta_output}" >/dev/null
 
-create_with_uma() {
-  local target="$1"
-  local body="${2:-}"
-  local content_type="${3:-}"
-  local mode="${4:-PUT}"
-  local attempts="${5:-60}"
-  local i
-
-  for (( i=1; i<=attempts; i++ )); do
-    local r t j tok
-    if [ -n "$body" ]; then
-      r="$(curl -i -sS -X "$mode" -H "content-type: $content_type" --data-binary @"$body" "$target" || true)"
-    else
-      r="$(curl -i -sS -X "$mode" "$target" || true)"
-    fi
-    t="$(printf '%s\n' "$r" | tr -d '\r' | sed -n 's/^WWW-Authenticate: .*ticket="\([^"]*\)".*/\1/p')"
-    if [ -z "$t" ]; then
-      sleep 1
-      continue
-    fi
-
-    j="$(curl -sS -X POST http://localhost:4000/uma/token -H 'content-type: application/json' \
-      --data "{\"grant_type\":\"urn:ietf:params:oauth:grant-type:uma-ticket\",\"ticket\":\"$t\",\"claim_token\":\"http%3A%2F%2Flocalhost%3A3000%2Falice%2Fprofile%2Fcard%23me\",\"claim_token_format\":\"urn:solidlab:uma:claims:formats:webid\"}" || true)"
-    tok="$(printf '%s\n' "$j" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')"
-    if [ -z "$tok" ]; then
-      sleep 1
-      continue
-    fi
-
-    if [ -n "$body" ]; then
-      if curl -sS -o /dev/null -X "$mode" -H "Authorization: Bearer $tok" -H "content-type: $content_type" \
-        --data-binary @"$body" "$target"; then
-        return 0
-      fi
-    else
-      if curl -sS -o /dev/null -X "$mode" -H "Authorization: Bearer $tok" "$target"; then
-        return 0
-      fi
-    fi
-
-    sleep 1
-  done
-
-  echo "Failed bootstrap request for $target" >&2
-  return 1
+  printf '%s\n' "${meta_output}"
 }
 
-create_with_uma "http://localhost:3000/alice/spo2/" "" "" "PUT" 60
-create_with_uma "http://localhost:3000/alice/derived/" "" "" "PUT" 60
-create_with_uma "http://localhost:3000/alice/derived/.meta" "packages/css/config/derived-spo2.meta.ttl" "text/turtle" "PUT" 60
+main() {
+  wait_for_url "${UMA_URL}/uma/keys" 120
+  wait_for_url "${BASE_URL}/" 120
 
-echo "Bootstrap complete: /alice/spo2/, /alice/derived/, /alice/derived/.meta"
+  ensure_container "${BASE_URL}/alice/spo2/"
+  ensure_container "${BASE_URL}/alice/derived/"
+  ensure_container "${BASE_URL}/alice/derived/anomaly-alert/"
+  uma_patch "${DERIVED_META_URL}" "${PATCH_FILE}"
+
+  local meta_output
+  meta_output="$(verify_metadata)"
+
+  if [ "$(grep -F -c 'latest-anomaly' <<<"${meta_output}")" -gt 1 ] || \
+    [ "$(grep -F -c '"http://localhost:3000/alice/derived/anomaly-alert/*"' <<<"${meta_output}")" -gt 1 ]; then
+    printf '%s\n' \
+      "Warning: legacy duplicate derived configs are still present in ${DERIVED_META_URL}." \
+      "The bootstrap no longer inserts new duplicate configs, but existing blank-node duplicates cannot be cleaned" \
+      "safely with CSS's supported PATCH forms because their generated identifiers are not addressable." >&2
+  fi
+
+  cat <<EOF
+Bootstrap complete. Resources verified:
+ - ${BASE_URL}/alice/spo2/
+ - ${BASE_URL}/alice/derived/
+ - ${BASE_URL}/alice/derived/anomaly-alert/
+ - ${DERIVED_META_URL}
+EOF
+}
+
+main "$@"

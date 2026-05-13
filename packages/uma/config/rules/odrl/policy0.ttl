@@ -15,8 +15,17 @@ ex:spo2Policy a odrl:Agreement ;
     ex:aliceDerivedContainerAliceAccess,
     ex:aliceDerivedContainerBobRead,
     ex:aliceDerivedContainerMetaAliceAccess,
+    ex:aliceAnomalyAlertContainerAccess,
+    ex:aliceAnomalyAlertMetaAccess,
+    ex:pandaAnomalyAlertContainerAccess,
+    ex:bobAnomalyAlertContainerRead,
+    ex:aliceDerivedLatestAnomalyAliceBobRead,
+    ex:aliceDerivedAnomalyAlertAlicePandaWrite,
+    ex:bobLatestAnomalyAlertRead,
     ex:derivedContainerAliceBobAccess,
-    ex:webhookChannelBobAccess .
+    ex:notificationsContainerBobAccess,
+    ex:webhookChannelBobAccess,
+    ex:websocketChannelBobAccess .
 
 ex:createSpo2ContainerAliceBob a odrl:Permission ;
   odrl:action odrl:create ;
@@ -78,7 +87,7 @@ ex:aliceDerivedLatestAliceBobRead a odrl:Permission ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
 ex:aliceDerivedContainerAliceAccess a odrl:Permission ;
-  odrl:action odrl:read, odrl:append, odrl:write ;
+  odrl:action odrl:read, odrl:append, odrl:write, odrl:create ;
   odrl:target <http://localhost:3000/alice/derived/> ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
@@ -95,6 +104,47 @@ ex:aliceDerivedContainerMetaAliceAccess a odrl:Permission ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
+# Alice can create/write/read the anomaly-alert container itself.
+# This is needed by bootstrap when creating /alice/derived/anomaly-alert/.
+ex:aliceAnomalyAlertContainerAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append, odrl:write ;
+  odrl:target <http://localhost:3000/alice/derived/anomaly-alert/> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+# Alice can write metadata for the anomaly-alert derived resource.
+# This is needed by bootstrap when writing /alice/derived/anomaly-alert/.meta.
+ex:aliceAnomalyAlertMetaAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append, odrl:write ;
+  odrl:target <http://localhost:3000/alice/derived/anomaly-alert/.meta> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+# PANDA can create/write concrete alert resources under the anomaly-alert container.
+# Example target resources:
+#   /alice/derived/anomaly-alert/low-spo2-<id>.ttl
+# The benchmark should prefer PANDA writing concrete alert resources, not /latest directly.
+ex:pandaAnomalyAlertContainerAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append, odrl:write ;
+  odrl:target <http://localhost:3000/alice/derived/anomaly-alert/> ;
+  odrl:assignee <http://localhost:8080/panda#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+# Bob/nurse can read the alert container if listing or resolving alert resources is needed.
+ex:bobAnomalyAlertContainerRead a odrl:Permission ;
+  odrl:action odrl:read ;
+  odrl:target <http://localhost:3000/alice/derived/anomaly-alert/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+# Bob/nurse can read the stable latest-alert derived resource.
+# This is the key permission for the authorized nurse latest-alert benchmark.
+ex:bobLatestAnomalyAlertRead a odrl:Permission ;
+  odrl:action odrl:read ;
+  odrl:target <http://localhost:3000/alice/derived/anomaly-alert/latest> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
 ex:derivedContainerAliceBobAccess a odrl:Permission ;
   odrl:action odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/derived> ;
@@ -103,8 +153,36 @@ ex:derivedContainerAliceBobAccess a odrl:Permission ;
     <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
+ex:aliceDerivedLatestAnomalyAliceBobRead a odrl:Permission ;
+  odrl:action odrl:read ;
+  odrl:target <http://localhost:3000/alice/derived/latest-anomaly> ;
+  odrl:assignee
+    <http://localhost:3000/alice/profile/card#me>,
+    <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:aliceDerivedAnomalyAlertAlicePandaWrite a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append, odrl:write ;
+  odrl:target <http://localhost:3000/alice/derived/anomaly-alert/> ;
+  odrl:assignee
+    <http://localhost:3000/alice/profile/card#me>,
+    <http://localhost:8080/panda#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .  
+
 ex:webhookChannelBobAccess a odrl:Permission ;
   odrl:action odrl:read, odrl:append, odrl:create ;
   odrl:target <http://localhost:3000/.notifications/WebhookChannel2023/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:notificationsContainerBobAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append, odrl:create ;
+  odrl:target <http://localhost:3000/.notifications/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:websocketChannelBobAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append, odrl:create ;
+  odrl:target <http://localhost:3000/.notifications/WebSocketChannel2023/> ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .

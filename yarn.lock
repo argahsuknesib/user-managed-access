@@ -10032,7 +10032,7 @@ __metadata:
 
 "@solidlab/derived-resources-component@file:../../../derived-resources-component::locator=%40solidlab%2Fuma-css%40workspace%3Apackages%2Fcss":
   version: 1.2.0
-  resolution: "@solidlab/derived-resources-component@file:../../../derived-resources-component#../../../derived-resources-component::hash=f27bf1&locator=%40solidlab%2Fuma-css%40workspace%3Apackages%2Fcss"
+  resolution: "@solidlab/derived-resources-component@file:../../../derived-resources-component#../../../derived-resources-component::hash=dac555&locator=%40solidlab%2Fuma-css%40workspace%3Apackages%2Fcss"
   dependencies:
     "@comunica/bus-dereference": "npm:^5.2.0"
     "@comunica/bus-http": "npm:^5.2.0"
@@ -10055,7 +10055,7 @@ __metadata:
     rdf-vocabulary: "npm:^1.0.1"
     sparqljs: "npm:^3.7.1"
     uri-template-lite: "npm:^23.4.0"
-  checksum: 10c0/9b2f84e7d7729beb79d5f3270969fc8f5d0269c9f3baa8dddcff4bdc12ac5c5b4f1c9570abe1a7e395500e6f04c8d2961369c05b35f395300c6cb702152f1465
+  checksum: 10c0/0d02f23a2630581de36c2a17b75165a528cb12288f2f6a01e2f6006887a8d6d2b15ce00b3e82e16bcbb40f04a36d596a9dbf2254294332cf82c954875f24375a
   languageName: node
   linkType: hard
 
