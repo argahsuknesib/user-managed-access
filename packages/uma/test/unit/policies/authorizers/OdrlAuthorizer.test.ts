@@ -16,6 +16,9 @@ vi.mock('../../../../src/ucp/policy/ODRL', async(importOriginal) => ({
 }));
 
 describe('OdrlAuthorizer', (): void => {
+  const PURPOSE_CLAIM = 'http://www.w3.org/ns/odrl/2/purpose';
+  const PURPOSE_VALUE = 'urn:client:benchmark';
+  const WEBID = 'urn:solidlab:uma:claims:types:webid';
   const sotw = [ DF.quad(
     DF.namedNode('http://example.com/request/currentTime'),
     DF.namedNode('http://purl.org/dc/terms/issued'),
@@ -233,5 +236,48 @@ describe('OdrlAuthorizer', (): void => {
       }]);
     expect(basicPolicy).toHaveBeenCalledTimes(3);
     expect(evaluate).toHaveBeenCalledTimes(3);
+  });
+
+  it('allows when webid and purpose both match.', async(): Promise<void> => {
+    const claims = { [WEBID]: 'http://localhost:3000/bob/profile/card#me', [PURPOSE_CLAIM]: PURPOSE_VALUE };
+    const query: Permission[] = [{ resource_id: 'rid', resource_scopes: [ 'urn:example:css:modes:read' ] }];
+    const report = `
+      @prefix cr: <https://w3id.org/force/compliance-report#> .
+      @prefix dc: <http://purl.org/dc/terms/> .
+      @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      <urn:policyReport> a cr:PolicyReport ; dc:created "2024-02-12T11:20:10.999Z"^^xsd:dateTime ; cr:policyRequest <req> ; cr:policy <urn:policy> ; cr:ruleReport <urn:ruleReport> .
+      <urn:ruleReport> a cr:PermissionReport ; cr:rule <urn:rule> ; cr:ruleRequest <urn:ruleRequest> ; cr:activationState cr:Active .
+    `;
+    evaluate.mockImplementationOnce(async(_p, request) => {
+      const store = new Store(request);
+      const hasPurpose = store.countQuads(null, DF.namedNode('http://www.w3.org/ns/odrl/2/rightOperand'), DF.namedNode(PURPOSE_VALUE), null) > 0;
+      return hasPurpose ? new Parser().parse(report) : [];
+    });
+    await expect(authorizer.permissions(claims, query)).resolves.toEqual([{ resource_id: 'rid', resource_scopes: [ 'urn:example:css:modes:read' ] }]);
+  });
+
+  it('denies when webid matches but purpose is missing.', async(): Promise<void> => {
+    const claims = { [WEBID]: 'http://localhost:3000/bob/profile/card#me' };
+    const query: Permission[] = [{ resource_id: 'rid', resource_scopes: [ 'urn:example:css:modes:read' ] }];
+    evaluate.mockResolvedValueOnce([]);
+    await expect(authorizer.permissions(claims, query)).resolves.toEqual([{ resource_id: 'rid', resource_scopes: [] }]);
+  });
+
+  it('denies when webid matches but purpose is wrong.', async(): Promise<void> => {
+    const claims = { [WEBID]: 'http://localhost:3000/bob/profile/card#me', [PURPOSE_CLAIM]: 'urn:client:wrong' };
+    const query: Permission[] = [{ resource_id: 'rid', resource_scopes: [ 'urn:example:css:modes:read' ] }];
+    evaluate.mockImplementationOnce(async(_p, request) => {
+      const store = new Store(request);
+      const hasPurpose = store.countQuads(null, DF.namedNode('http://www.w3.org/ns/odrl/2/rightOperand'), DF.namedNode(PURPOSE_VALUE), null) > 0;
+      return hasPurpose ? [ DF.quad(DF.namedNode('x'), RDF.terms.type, DF.namedNode('y')) ] : [];
+    });
+    await expect(authorizer.permissions(claims, query)).resolves.toEqual([{ resource_id: 'rid', resource_scopes: [] }]);
+  });
+
+  it('denies when webid is wrong even with correct purpose.', async(): Promise<void> => {
+    const claims = { [WEBID]: 'http://localhost:3000/alice/profile/card#me', [PURPOSE_CLAIM]: PURPOSE_VALUE };
+    const query: Permission[] = [{ resource_id: 'rid', resource_scopes: [ 'urn:example:css:modes:read' ] }];
+    evaluate.mockResolvedValueOnce([]);
+    await expect(authorizer.permissions(claims, query)).resolves.toEqual([{ resource_id: 'rid', resource_scopes: [] }]);
   });
 });

@@ -2,7 +2,7 @@ import { BadRequestHttpError, DC, RDF } from '@solid/community-server';
 import { getLoggerFor } from 'global-logger-factory';
 import { DataFactory, Quad, Store, Writer } from 'n3';
 import { EyelingReasoner, EyeReasoner, ODRLEngineMultipleSteps, ODRLEvaluator } from 'odrl-evaluator';
-import { CLIENTID, WEBID } from '../../credentials/Claims';
+import { WEBID } from '../../credentials/Claims';
 import { ClaimSet } from '../../credentials/ClaimSet';
 import { basicPolicy } from '../../ucp/policy/ODRL';
 import { PrioritizeProhibitionStrategy } from '../../ucp/policy/PrioritizeProhibitionStrategy';
@@ -14,6 +14,7 @@ import { Permission } from '../../views/Permission';
 import { Authorizer } from './Authorizer';
 
 const { quad, namedNode, literal, blankNode } = DataFactory
+const ODRL_PURPOSE_CLAIM = 'http://www.w3.org/ns/odrl/2/purpose';
 
 /**
  * Permission evaluation is performed as follows:
@@ -73,14 +74,14 @@ export class OdrlAuthorizer implements Authorizer {
         const subject = typeof claims[WEBID] === 'string' ? claims[WEBID] : 'urn:solidlab:uma:id:anonymous';
         const clientQuads: Quad[] = [];
         const clientSubject = blankNode();
-        if (typeof claims[CLIENTID] === 'string') {
+        if (typeof claims[ODRL_PURPOSE_CLAIM] === 'string') {
             clientQuads.push(
                 quad(clientSubject, RDF.terms.type, ODRL.terms.Constraint),
                 // TODO: using purpose as other constraints are not supported in current version of ODRL evaluator
                 //       https://github.com/SolidLabResearch/ODRL-Evaluator/blob/v0.5.0/ODRL-Support.md#left-operands
                 quad(clientSubject, ODRL.terms.leftOperand, namedNode(ODRL.namespace + 'purpose')),
                 quad(clientSubject, ODRL.terms.operator, ODRL.terms.eq),
-                quad(clientSubject, ODRL.terms.rightOperand, namedNode(claims[CLIENTID])),
+                quad(clientSubject, ODRL.terms.rightOperand, namedNode(claims[ODRL_PURPOSE_CLAIM])),
             );
             // constraints.push({
             //     type: ODRL.namespace + 'deliveryChannel',

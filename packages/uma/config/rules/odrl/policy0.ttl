@@ -4,27 +4,44 @@
 ex:spo2Policy a odrl:Agreement ;
   odrl:uid ex:spo2Policy ;
   odrl:permission
-    ex:createSpo2ContainerAliceBob,
+    ex:createSpo2ContainerAlice,
+    ex:createSpo2ContainerBobBenchmark,
     ex:spo2AliceAccess,
-    ex:spo2BobPandaAccess,
-    ex:spo2ReplayerAccess,
-    ex:derivedSpo2AliceBobPandaAccess,
-    ex:derivedSpo2ReplayerAccess,
-    ex:spo2DerivedAliceBobAccess,
-    ex:aliceDerivedLatestAliceBobRead,
+    ex:spo2BobBenchmarkAccess,
+    ex:spo2PandaBenchmarkAccess,
+    ex:spo2ReplayerBenchmarkAccess,
+    ex:derivedSpo2AliceAccess,
+    ex:derivedSpo2BobBenchmarkAccess,
+    ex:derivedSpo2PandaBenchmarkAccess,
+    ex:derivedSpo2ReplayerBenchmarkAccess,
+    ex:spo2DerivedAliceAccess,
+    ex:spo2DerivedBobBenchmarkAccess,
+    ex:aliceDerivedLatestAliceRead,
+    ex:aliceDerivedLatestBobBenchmarkRead,
     ex:aliceDerivedContainerAliceAccess,
-    ex:aliceDerivedContainerBobRead,
+    ex:aliceDerivedContainerBobBenchmarkRead,
     ex:aliceDerivedContainerMetaAliceAccess,
-    ex:derivedContainerAliceBobAccess,
-    ex:webhookChannelBobAccess .
+    ex:derivedContainerAliceAccess,
+    ex:derivedContainerBobBenchmarkAccess,
+    ex:webhookChannelBobBenchmarkAccess .
 
-ex:createSpo2ContainerAliceBob a odrl:Permission ;
+ex:createSpo2ContainerAlice a odrl:Permission ;
   odrl:action odrl:create ;
   odrl:target <http://localhost:3000/alice/> ;
-  odrl:assignee
-    <http://localhost:3000/alice/profile/card#me>,
-    <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:createSpo2ContainerBobBenchmark a odrl:Permission ;
+  odrl:action odrl:create ;
+  odrl:target <http://localhost:3000/alice/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
 
 ex:spo2AliceAccess a odrl:Permission ;
   odrl:action odrl:create, odrl:read, odrl:append, odrl:write ;
@@ -32,50 +49,119 @@ ex:spo2AliceAccess a odrl:Permission ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:spo2BobPandaAccess a odrl:Permission ;
+ex:spo2BobBenchmarkAccess a odrl:Permission ;
   odrl:action odrl:create, odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/spo2/> ;
-  odrl:assignee
-    <http://localhost:3000/bob/profile/card#me>,
-    <http://localhost:8080/panda#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
 
-ex:spo2ReplayerAccess a odrl:Permission ;
+ex:spo2PandaBenchmarkAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append ;
+  odrl:target <http://localhost:3000/alice/spo2/> ;
+  odrl:assignee <http://localhost:8080/panda#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
+
+ex:spo2ReplayerBenchmarkAccess a odrl:Permission ;
   odrl:action odrl:create, odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/spo2/> ;
   odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
 
-ex:derivedSpo2AliceBobPandaAccess a odrl:Permission ;
+ex:derivedSpo2AliceAccess a odrl:Permission ;
   odrl:action odrl:create, odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/derived/spo2/> ;
-  odrl:assignee
-    <http://localhost:3000/alice/profile/card#me>,
-    <http://localhost:3000/bob/profile/card#me>,
-    <http://localhost:8080/panda#me> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:derivedSpo2ReplayerAccess a odrl:Permission ;
+ex:derivedSpo2BobBenchmarkAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append ;
+  odrl:target <http://localhost:3000/alice/derived/spo2/> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
+
+ex:derivedSpo2PandaBenchmarkAccess a odrl:Permission ;
+  odrl:action odrl:create, odrl:read, odrl:append ;
+  odrl:target <http://localhost:3000/alice/derived/spo2/> ;
+  odrl:assignee <http://localhost:8080/panda#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
+
+ex:derivedSpo2ReplayerBenchmarkAccess a odrl:Permission ;
   odrl:action odrl:read ;
   odrl:target <http://localhost:3000/alice/derived/spo2/> ;
   odrl:assignee <http://n063-04b.wall2.ilabt.iminds.be/replayer#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
 
-ex:spo2DerivedAliceBobAccess a odrl:Permission ;
+ex:spo2DerivedAliceAccess a odrl:Permission ;
   odrl:action odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/alice/spo2/derived> ;
-  odrl:assignee
-    <http://localhost:3000/alice/profile/card#me>,
-    <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:aliceDerivedLatestAliceBobRead a odrl:Permission ;
+ex:spo2DerivedBobBenchmarkAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append ;
+  odrl:target <http://localhost:3000/alice/spo2/derived> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
+
+ex:aliceDerivedLatestAliceRead a odrl:Permission ;
   odrl:action odrl:read ;
   odrl:target <http://localhost:3000/alice/derived/latest> ;
-  odrl:assignee
-    <http://localhost:3000/alice/profile/card#me>,
-    <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+
+ex:aliceDerivedLatestBobBenchmarkRead a odrl:Permission ;
+  odrl:action odrl:read ;
+  odrl:target <http://localhost:3000/alice/derived/latest> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
 
 ex:aliceDerivedContainerAliceAccess a odrl:Permission ;
   odrl:action odrl:read, odrl:append, odrl:write ;
@@ -83,11 +169,17 @@ ex:aliceDerivedContainerAliceAccess a odrl:Permission ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:aliceDerivedContainerBobRead a odrl:Permission ;
+ex:aliceDerivedContainerBobBenchmarkRead a odrl:Permission ;
   odrl:action odrl:read ;
   odrl:target <http://localhost:3000/alice/derived/> ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
 
 ex:aliceDerivedContainerMetaAliceAccess a odrl:Permission ;
   odrl:action odrl:append, odrl:write ;
@@ -95,16 +187,32 @@ ex:aliceDerivedContainerMetaAliceAccess a odrl:Permission ;
   odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:derivedContainerAliceBobAccess a odrl:Permission ;
+ex:derivedContainerAliceAccess a odrl:Permission ;
   odrl:action odrl:read, odrl:append ;
   odrl:target <http://localhost:3000/derived> ;
-  odrl:assignee
-    <http://localhost:3000/alice/profile/card#me>,
-    <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assignee <http://localhost:3000/alice/profile/card#me> ;
   odrl:assigner <http://localhost:3000/alice/profile/card#me> .
 
-ex:webhookChannelBobAccess a odrl:Permission ;
+ex:derivedContainerBobBenchmarkAccess a odrl:Permission ;
+  odrl:action odrl:read, odrl:append ;
+  odrl:target <http://localhost:3000/derived> ;
+  odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .
+
+ex:webhookChannelBobBenchmarkAccess a odrl:Permission ;
   odrl:action odrl:read, odrl:append, odrl:create ;
   odrl:target <http://localhost:3000/.notifications/WebhookChannel2023/> ;
   odrl:assignee <http://localhost:3000/bob/profile/card#me> ;
-  odrl:assigner <http://localhost:3000/alice/profile/card#me> .
+  odrl:assigner <http://localhost:3000/alice/profile/card#me> ;
+  odrl:constraint [
+    a odrl:Constraint ;
+    odrl:leftOperand odrl:purpose ;
+    odrl:operator odrl:eq ;
+    odrl:rightOperand <urn:client:benchmark>
+  ] .

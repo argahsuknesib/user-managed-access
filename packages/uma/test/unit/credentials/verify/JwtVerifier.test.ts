@@ -58,6 +58,19 @@ describe('JwtVerifier', (): void => {
     expect(verifyMock).toHaveBeenCalledTimes(0);
   });
 
+  it('preserves full URI claim names such as odrl purpose.', async(): Promise<void> => {
+    const purposeClaim = 'http://www.w3.org/ns/odrl/2/purpose';
+    decodeMock.mockReturnValueOnce({
+      [purposeClaim]: 'urn:client:benchmark',
+      claim1: 'val1',
+    });
+    verifier = new JwtVerifier([ purposeClaim, 'claim1' ], false, false);
+    await expect(verifier.verify(credential)).resolves.toEqual({
+      [purposeClaim]: 'urn:client:benchmark',
+      claim1: 'val1',
+    });
+  });
+
   it('errors on extra claims if the option is enabled.', async(): Promise<void> => {
     verifier = new JwtVerifier(allowedClaims, true, false);
     await expect(verifier.verify(credential)).rejects.toThrow("Claim 'claim2' not allowed");
